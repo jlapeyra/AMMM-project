@@ -6,6 +6,8 @@
 #include "util.hpp"
 #include <algorithm>
 
+
+
 void State::clear() { comission.clear(); }
 
 int State::validComission() {

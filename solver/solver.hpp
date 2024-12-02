@@ -10,4 +10,4 @@ struct SolverSolution {
   float fitness;
 };
 
-SolverSolution solve(State& state);
+// SolverSolution solve(State& state);
