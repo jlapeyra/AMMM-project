@@ -54,7 +54,7 @@ bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vect
   iterations++;
   if (requiredTeachers == 0) {
     tests++;
-    return input.valid(comission);
+    return input.validMediation(comission);
   }
 
   std::vector<TeacherRank> bestTeachers = findbestTeachers(comission, dFull, input);
