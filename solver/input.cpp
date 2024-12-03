@@ -76,8 +76,66 @@ int Input::read(const string& file) {
   *this = fromString(readFromFile(file));
   return this->errored;
 }
+
 void Input::save() {
   printf("%s\n", toString(*this).c_str());
+}
+
+bool Input::compatibleMemmber(const std::vector<int>& comission, int newMember) {
+  for (int i = 0; i < comission.size(); i++) {
+    if (m[comission[i]][newMember] <= 0.0f) return false;
+  }
+  return true;
+}
+
+bool Input::valid(const std::vector<int>& comission) {
+  return validDepartment(comission) && validCompatibility(comission);
+}
+
+bool Input::validCompatibility(const std::vector<int>& comission) {
+  for (int i = 0; i < comission.size(); i++) {
+    for (int j = i + 1; j < comission.size(); j++) {
+      int u = comission[i];
+      int v = comission[j];
+
+      float compat = m[u][v];
+      if (compat <= 0.0f)
+        return false;
+    }
+  }
+  return true;
+}
+
+bool Input::validDepartment(const std::vector<int>& comission) {
+  std::vector<int> departemtFullfilment(n.size());
+  for (int i = 0; i < comission.size(); i++) {
+    departemtFullfilment[d[comission[i]]]++;
+  }
+
+  for (int i = 0; i < departemtFullfilment.size(); i++) {
+    if (departemtFullfilment[i] != n[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+float Input::score(const std::vector<int>& comission) {
+  float score = 0.0f;
+  int   count = 0;
+  for (int i = 0; i < comission.size(); i++) {
+    for (int j = i + 1; j < comission.size(); j++) {
+      int u = comission[i];
+      int v = comission[j];
+
+      score += m[u][v];
+      count++;
+    }
+  }
+
+  return score;
+  // al opl no calculem la mitjana
+  // return score / count;
 }
 
 void Input::print() {
@@ -96,7 +154,7 @@ void Input::print() {
     printf("\n");
   }
 
-  printf("Valid = %d\n", valid());
+  printf("ValidInput = %d\n", valid());
 }
 
 Input::Input() { errored = false; }

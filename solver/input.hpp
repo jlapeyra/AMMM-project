@@ -26,5 +26,12 @@ struct Input {
   bool valid();
 
 
+  bool  compatibleMemmber(const std::vector<int>& comission, int newMember);
+  bool  validCompatibility(const std::vector<int>& comission);
+  bool  validDepartment(const std::vector<int>& comission);
+  bool  valid(const std::vector<int>& comission);
+  float score(const std::vector<int>& comission);
+
+
   static Input generateInput();
 };

@@ -1,8 +1,7 @@
 #include <cstdlib>
-#include <iostream>
 #include "input.hpp"
-#include "state.hpp"
-#include <cstdio>
+#include "solver.hpp"
+#include <time.h>
 
 int generate(int argc, char** argv) {
   Input         input;
@@ -31,20 +30,23 @@ int generate(int argc, char** argv) {
 int solve(int argc, char** argv) {
   Input input;
 
-
   if (argc < 3) {
     dprintf(2, "Not enough arguments\n");
     return 1;
   }
 
-  if (input.read(std::string(argv[2]))) {
-    dprintf(2, "Error reading input file\n");
-    return 1;
-  }
-  input.print();
+  int i = 2;
+  while (argv[i]) {
+    input.clear();
+    if (input.read(std::string(argv[i]))) {
+      dprintf(2, "Error reading input file\n");
+      return 1;
+    }
+    input.print();
 
-  State state(input);
-  state.greedyRandom(1.0);
+    solve(1.0f, input);
+    i++;
+  }
   return 0;
 }
 
@@ -54,7 +56,7 @@ int main(int argc, char** argv) {
   if (argc < 2) {
     dprintf(2, "You need to provide an operation to execute.\n");
     dprintf(2, "1) Generate a random problem of size <N> <D>\n");
-    dprintf(2, "2) Solve problem <P> with algorithm <A>\n");
+    dprintf(2, "2) Solve problem <P>\n");
     return 1;
   }
 

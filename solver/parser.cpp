@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-std::string trim(const std::string& str) {
+static std::string trim(const std::string& str) {
   size_t first = str.find_first_not_of(' ');
   size_t last  = str.find_last_not_of(' ');
   return str.substr(first, (last - first + 1));
@@ -107,7 +107,7 @@ Input fromString(const string& input) {
   }
 
   if (data.D() != D) {
-    dprintf(2, "[PARSER] Mismatch D : real %d, theoretical %d\n", data.N(), N);
+    dprintf(2, "[PARSER] Mismatch D : real %d, theoretical %d\n", data.D(), D);
     Input error;
     error.errored = true;
     return error;

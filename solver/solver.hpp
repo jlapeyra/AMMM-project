@@ -1,13 +1,15 @@
 #pragma once
-#include "state.hpp"
+#include <vector>
+#include "input.hpp"
 
 struct SolverOpts {
   int method;
 };
 
 struct SolverSolution {
-  float runningTime;
-  float fitness;
+  float            runningTime;
+  float            fitness;
+  std::vector<int> comission;
 };
 
-// SolverSolution solve(State& state);
+SolverSolution solve(float alpha, Input& input);
