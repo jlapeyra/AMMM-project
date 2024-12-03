@@ -106,3 +106,28 @@ SolverSolution solve(float alpha, Input& input) {
   }
   return sol;
 }
+
+//Perform 1-Swap to generate all feasible neihgbors
+std::vector<State> getNeighbors(Input& input, State& current) {
+  std::vector<State> alternatives;
+
+  std::vector<int> present(input.N());
+  for (int u : current) present[u] = 1;
+  std::vector<int> notInComission;
+
+  for (int i = 0; i < input.N(); i++)
+    if (!present[i]) notInComission.push_back(i);
+
+
+  for (int i = 0; i < current.size(); i++) {
+    for (int j = 0; j < notInComission.size(); j++) {
+      std::swap(current[i], notInComission[j]);
+      if (input.valid(current)) {
+        alternatives.push_back(current);
+      }
+      std::swap(current[i], notInComission[j]);
+    }
+  }
+
+  return alternatives;
+}

@@ -2,6 +2,7 @@
 #include <vector>
 #include "input.hpp"
 
+using State = std::vector<int>;
 struct SolverOpts {
   int method;
 };
@@ -13,3 +14,5 @@ struct SolverSolution {
 };
 
 SolverSolution solve(float alpha, Input& input);
+
+std::vector<State> getNeighbors(Input& input, State& current);

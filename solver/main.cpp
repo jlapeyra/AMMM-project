@@ -2,6 +2,7 @@
 #include "input.hpp"
 #include "solver.hpp"
 #include <time.h>
+#include "util.hpp"
 
 int generate(int argc, char** argv) {
   Input         input;
@@ -44,7 +45,17 @@ int solve(int argc, char** argv) {
     }
     input.print();
 
-    solve(1.0f, input);
+    auto solution  = solve(1.0f, input);
+    auto neighbors = getNeighbors(input, solution.comission);
+
+    if (solution.comission.size()) {
+      printf("Found alternate solutions %d\n", neighbors.size());
+      for (int i = 0; i < neighbors.size(); i++) {
+        printVector(neighbors[i]);
+        printf(" AltScore: %f\n", input.score(neighbors[i]));
+      }
+    }
+
     i++;
   }
   return 0;
