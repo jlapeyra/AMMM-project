@@ -101,5 +101,8 @@ SolverSolution solve(float alpha, Input& input) {
   printf("Valid = %d\n", valid = input.valid(comission));
   if (valid)
     printf("Score = %f\n", input.score(comission));
+  else {
+    printf("Score = NaN\n");
+  }
   return sol;
 }
