@@ -4,6 +4,7 @@
 #include "parser.hpp"
 #include <iostream>
 #include "util.hpp"
+#include <set>
 
 // Function to write a std::string to a file
 int writeToFile(const std::string& filePath, const std::string& content) {
@@ -89,7 +90,7 @@ bool Input::compatibleMemmber(const std::vector<int>& comission, int newMember) 
 }
 
 bool Input::valid(const std::vector<int>& comission) {
-  return validDepartment(comission) && validCompatibility(comission);
+  return validDepartment(comission) && validCompatibility(comission) && validMediation(comission);
 }
 
 bool Input::validCompatibility(const std::vector<int>& comission) {
@@ -117,6 +118,38 @@ bool Input::validDepartment(const std::vector<int>& comission) {
       return false;
     }
   }
+  return true;
+}
+
+bool Input::validMediation(const std::vector<int>& comission) {
+  struct TeacherPair {
+    int a;
+    int b;
+  };
+
+  std::vector<TeacherPair> problematics;
+  problematics.clear();
+
+  for (int i = 0; i < comission.size(); i++) {
+    for (int j = 0; j < comission.size(); j++) {
+      int u = comission[i];
+      int v = comission[j];
+
+      if (m[u][v] < 0.15f) problematics.push_back({u, v});
+    }
+  }
+
+  for (TeacherPair& pair : problematics) {
+    bool invalid = true;
+    for (int u : comission) {
+      if (m[u][pair.a] > 0.85 && m[u][pair.b] > 0.85) {
+        invalid = false;
+        break;
+      }
+    }
+    if (invalid) return false;
+  }
+
   return true;
 }
 

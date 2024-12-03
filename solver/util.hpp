@@ -3,6 +3,11 @@
 #include <iostream>
 template <typename T>
 void printVector(std::vector<T>& v) {
+  if (v.size() == 0) {
+    printf("[]");
+    return;
+  }
+
   printf("[");
   for (int i = 0; i < v.size() - 1; i++) {
     std::cout << v[i];

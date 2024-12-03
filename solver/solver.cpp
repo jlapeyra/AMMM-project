@@ -9,13 +9,13 @@ struct TeacherRank {
   float score;
 };
 
-bool memberOfComission(std::vector<int>& comission, int teacher) {
+bool memberOfComission(const std::vector<int>& comission, int teacher) {
   for (int i = 0; i < comission.size(); i++)
     if (comission[i] == teacher) return true;
   return false;
 }
 
-float memberCompatible(std::vector<int>& comission, Input& input, int member) {
+float memberCompatible(const std::vector<int>& comission, Input& input, int member) {
   float compat = 0.0f;
   for (int i = 0; i < comission.size(); i++) {
     if (input.m[comission[i]][member] <= 0.0f) return -1.0f;
@@ -24,8 +24,9 @@ float memberCompatible(std::vector<int>& comission, Input& input, int member) {
   return compat;
 }
 
-std::vector<TeacherRank> findbestTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
+std::vector<TeacherRank> findbestTeachers(const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
   std::vector<TeacherRank> result;
+
   for (int i = 0; i < input.N(); i++) {
     //Is already member
     if (memberOfComission(comission, i)) continue;
@@ -34,8 +35,11 @@ std::vector<TeacherRank> findbestTeachers(std::vector<int>& comission, std::vect
     //Department fulfilled
     if (dFullfilment[d] == input.n[d]) continue;
 
+    //Member compatibility
     float score = memberCompatible(comission, input, i);
-    if (score >= 0.0f) result.push_back({i, score});
+    if (score < 0.0f) continue;
+
+    result.push_back({i, score});
   }
 
   //Rank all options based on compatibility with current comission
@@ -43,8 +47,15 @@ std::vector<TeacherRank> findbestTeachers(std::vector<int>& comission, std::vect
   return result;
 }
 
+int iterations;
+int tests;
+
 bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input) {
-  if (requiredTeachers == 0) return true;
+  iterations++;
+  if (requiredTeachers == 0) {
+    tests++;
+    return input.valid(comission);
+  }
 
   std::vector<TeacherRank> bestTeachers = findbestTeachers(comission, dFull, input);
 
@@ -76,6 +87,9 @@ SolverSolution solve(float alpha, Input& input) {
   for (int i = 0; i < input.D(); i++) { requiredTeachers += input.n[i]; }
   solveRecursive(requiredTeachers, comission, currentDepartmentFullfilment, input);
 
+  printf("Iterations = %d\n", iterations);
+  printf("Tests = %d\n", tests);
+
   printf("Comission = ");
   printVector(comission);
   printf("\n");
@@ -83,6 +97,7 @@ SolverSolution solve(float alpha, Input& input) {
   int valid;
   printf("Valid compatibility = %d\n", input.validCompatibility(comission));
   printf("Valid department fullfilment = %d\n", input.validDepartment(comission));
+  printf("Valid mediation = %d\n", input.validMediation(comission));
   printf("Valid = %d\n", valid = input.valid(comission));
   if (valid)
     printf("Score = %f\n", input.score(comission));
