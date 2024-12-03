@@ -24,10 +24,10 @@ float memberCompatible(const std::vector<int>& comission, Input& input, int memb
   return compat;
 }
 
-std::vector<TeacherRank> findbestTeachers(const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
+std::vector<TeacherRank> findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
   std::vector<TeacherRank> result;
 
-  for (int i = 0; i < input.N(); i++) {
+  for (int i = start; i < input.N(); i++) {
     //Is already member
     if (memberOfComission(comission, i)) continue;
     int d = input.d[i];
@@ -50,14 +50,14 @@ std::vector<TeacherRank> findbestTeachers(const std::vector<int>& comission, std
 int iterations;
 int tests;
 
-bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input) {
+bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input) {
   iterations++;
   if (requiredTeachers == 0) {
     tests++;
     return input.validMediation(comission);
   }
 
-  std::vector<TeacherRank> bestTeachers = findbestTeachers(comission, dFull, input);
+  std::vector<TeacherRank> bestTeachers = findbestTeachers(start, comission, dFull, input);
 
   for (int i = 0; i < bestTeachers.size(); i++) {
     int teacher = bestTeachers[i].teacher;
@@ -66,7 +66,7 @@ bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vect
     comission.push_back(teacher);
     dFull[input.d[teacher]]++;
 
-    bool solved = solveRecursive(requiredTeachers - 1, comission, dFull, input);
+    bool solved = solveRecursive(start + 1, requiredTeachers - 1, comission, dFull, input);
     if (solved) return solved;
 
     //Comission remove
@@ -85,7 +85,7 @@ SolverSolution solve(float alpha, Input& input) {
   int requiredTeachers = 0;
 
   for (int i = 0; i < input.D(); i++) { requiredTeachers += input.n[i]; }
-  solveRecursive(requiredTeachers, comission, currentDepartmentFullfilment, input);
+  solveRecursive(0, requiredTeachers, comission, currentDepartmentFullfilment, input);
 
   printf("Iterations = %d\n", iterations);
   printf("Tests = %d\n", tests);
