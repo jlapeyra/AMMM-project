@@ -45,17 +45,15 @@ int solve(int argc, char** argv) {
     }
     input.print();
 
-    auto solution  = solve(1.0f, input);
-    auto neighbors = getNeighbors(input, solution.comission);
+    auto solution = solve(1.0f, input);
 
     if (solution.comission.size()) {
-      printf("Found alternate solutions %d\n", neighbors.size());
-      for (int i = 0; i < neighbors.size(); i++) {
-        printVector(neighbors[i]);
-        printf(" AltScore: %f\n", input.score(neighbors[i]));
-      }
+      printf("Comission = ");
+      printVector(solution.comission);
+      printf("\nScore = %f\n", input.score(solution.comission));
+    } else {
+      printf("No solution found.");
     }
-
     i++;
   }
   return 0;

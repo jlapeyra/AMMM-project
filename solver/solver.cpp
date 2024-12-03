@@ -1,8 +1,12 @@
 #include "solver.hpp"
+#include <cstdio>
 #include <vector>
 #include <algorithm>
 #include "input.hpp"
 #include "util.hpp"
+#include "hill.hpp"
+
+bool verbose = false;
 
 struct TeacherRank {
   int   teacher;
@@ -77,7 +81,7 @@ bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission
   return false;
 }
 
-SolverSolution solve(float alpha, Input& input) {
+SolverSolution solveGreedy(float alpha, Input& input) {
   SolverSolution    sol;
   std::vector<int>  currentDepartmentFullfilment(input.D());
   std::vector<int>& comission = sol.comission;
@@ -87,22 +91,23 @@ SolverSolution solve(float alpha, Input& input) {
   for (int i = 0; i < input.D(); i++) { requiredTeachers += input.n[i]; }
   solveRecursive(0, requiredTeachers, comission, currentDepartmentFullfilment, input);
 
-  printf("Iterations = %d\n", iterations);
-  printf("Tests = %d\n", tests);
+  if (verbose) {
+    printf("Iterations = %d\n", iterations);
+    printf("Tests = %d\n", tests);
+    printf("Comission = ");
+    printVector(comission);
+    printf("\n");
 
-  printf("Comission = ");
-  printVector(comission);
-  printf("\n");
-
-  int valid;
-  printf("Valid compatibility = %d\n", input.validCompatibility(comission));
-  printf("Valid department fullfilment = %d\n", input.validDepartment(comission));
-  printf("Valid mediation = %d\n", input.validMediation(comission));
-  printf("Valid = %d\n", valid = input.valid(comission));
-  if (valid)
-    printf("Score = %f\n", input.score(comission));
-  else {
-    printf("Score = NaN\n");
+    int valid;
+    printf("Valid compatibility = %d\n", input.validCompatibility(comission));
+    printf("Valid department fullfilment = %d\n", input.validDepartment(comission));
+    printf("Valid mediation = %d\n", input.validMediation(comission));
+    printf("Valid = %d\n", valid = input.valid(comission));
+    if (valid)
+      printf("Score = %f\n", input.score(comission));
+    else {
+      printf("Score = NaN\n");
+    }
   }
   return sol;
 }
@@ -130,4 +135,25 @@ std::vector<State> getNeighbors(Input& input, State& current) {
   }
 
   return alternatives;
+}
+
+
+SolverSolution solve(float alpha, Input& input) {
+  SolverSolution sol;
+  sol = solveGreedy(alpha, input);
+  if (sol.comission.size()) {
+    if (verbose)
+      printf("Executing hill climbing:\n");
+
+    OptimizationResult result = optimize(input, sol.comission, getNeighbors, score);
+
+    sol.comission = result.state;
+    sol.fitness   = score(input, result.state);
+
+    if (verbose) {
+      printf("Iterations = %d\n", result.iterations);
+      printf("Newscore = %f\n", sol.fitness);
+    }
+  }
+  return sol;
 }

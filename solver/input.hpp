@@ -26,13 +26,15 @@ struct Input {
   bool valid();
 
 
-  bool  compatibleMemmber(const std::vector<int>& comission, int newMember);
-  bool  validCompatibility(const std::vector<int>& comission);
-  bool  validDepartment(const std::vector<int>& comission);
-  bool  validMediation(const std::vector<int>& comission);
-  bool  valid(const std::vector<int>& comission);
-  float score(const std::vector<int>& comission);
+  bool  compatibleMemmber(const std::vector<int>& comission, int newMember) const;
+  bool  validCompatibility(const std::vector<int>& comission) const;
+  bool  validDepartment(const std::vector<int>& comission) const;
+  bool  validMediation(const std::vector<int>& comission) const;
+  bool  valid(const std::vector<int>& comission) const;
+  float score(const std::vector<int>& comission) const;
 
 
   static Input generateInput();
 };
+
+float score(const Input& input, const std::vector<int>& comission);

@@ -85,18 +85,18 @@ void Input::save() {
   printf("%s\n", toString(*this).c_str());
 }
 
-bool Input::compatibleMemmber(const std::vector<int>& comission, int newMember) {
+bool Input::compatibleMemmber(const std::vector<int>& comission, int newMember) const {
   for (int i = 0; i < comission.size(); i++) {
     if (m[comission[i]][newMember] <= 0.0f) return false;
   }
   return true;
 }
 
-bool Input::valid(const std::vector<int>& comission) {
+bool Input::valid(const std::vector<int>& comission) const {
   return validDepartment(comission) && validCompatibility(comission) && validMediation(comission);
 }
 
-bool Input::validCompatibility(const std::vector<int>& comission) {
+bool Input::validCompatibility(const std::vector<int>& comission) const {
   for (int i = 0; i < comission.size(); i++) {
     for (int j = i + 1; j < comission.size(); j++) {
       int u = comission[i];
@@ -110,7 +110,7 @@ bool Input::validCompatibility(const std::vector<int>& comission) {
   return true;
 }
 
-bool Input::validDepartment(const std::vector<int>& comission) {
+bool Input::validDepartment(const std::vector<int>& comission) const {
   std::vector<int> departemtFullfilment(n.size());
   for (int i = 0; i < comission.size(); i++) {
     departemtFullfilment[d[comission[i]]]++;
@@ -124,7 +124,7 @@ bool Input::validDepartment(const std::vector<int>& comission) {
   return true;
 }
 
-bool Input::validMediation(const std::vector<int>& comission) {
+bool Input::validMediation(const std::vector<int>& comission) const {
   struct TeacherPair {
     int a;
     int b;
@@ -156,7 +156,7 @@ bool Input::validMediation(const std::vector<int>& comission) {
   return true;
 }
 
-float Input::score(const std::vector<int>& comission) {
+float Input::score(const std::vector<int>& comission) const {
   float score = 0.0f;
   int   count = 0;
   for (int i = 0; i < comission.size(); i++) {
@@ -194,3 +194,8 @@ void Input::print() {
 }
 
 Input::Input() { errored = false; }
+
+
+float score(const Input& input, const std::vector<int>& comission) {
+  return input.score(comission);
+}
