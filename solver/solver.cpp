@@ -6,7 +6,7 @@
 #include "util.hpp"
 #include "hill.hpp"
 
-bool verbose = false;
+bool verbose = true;
 
 struct TeacherRank {
   int   teacher;
@@ -81,6 +81,7 @@ bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission
   return false;
 }
 
+/** Greedy solver **/
 SolverSolution solveGreedy(float alpha, Input& input) {
   SolverSolution    sol;
   std::vector<int>  currentDepartmentFullfilment(input.D());
@@ -112,7 +113,25 @@ SolverSolution solveGreedy(float alpha, Input& input) {
   return sol;
 }
 
-//Perform 1-Swap to generate all feasible neihgbors
+void swapNeighbors(int depth, std::vector<int>& notInComission, Input& input, State& current, std::vector<State>& alternatives) {
+
+  for (int i = 0; i < current.size(); i++) {
+    for (int j = 0; j < notInComission.size(); j++) {
+      std::swap(current[i], notInComission[j]);
+
+      if (depth > 1) {
+        swapNeighbors(depth - 1, notInComission, input, current, alternatives);
+      }
+
+      if (input.valid(current)) {
+        alternatives.push_back(current);
+      }
+      std::swap(current[i], notInComission[j]);
+    }
+  }
+}
+
+//Perform n-Swap to generate all feasible neihgbors
 std::vector<State> getNeighbors(Input& input, State& current) {
   std::vector<State> alternatives;
 
@@ -124,20 +143,12 @@ std::vector<State> getNeighbors(Input& input, State& current) {
     if (!present[i]) notInComission.push_back(i);
 
 
-  for (int i = 0; i < current.size(); i++) {
-    for (int j = 0; j < notInComission.size(); j++) {
-      std::swap(current[i], notInComission[j]);
-      if (input.valid(current)) {
-        alternatives.push_back(current);
-      }
-      std::swap(current[i], notInComission[j]);
-    }
-  }
+  swapNeighbors(2, notInComission, input, current, alternatives);
 
   return alternatives;
 }
 
-
+/* General solver */
 SolverSolution solve(float alpha, Input& input) {
   SolverSolution sol;
   sol = solveGreedy(alpha, input);

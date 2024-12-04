@@ -48,7 +48,7 @@ int Input::generate(GeneratorOpts opts) {
   m.resize(opts.N, std::vector<float>(opts.N));
   for (int i = 0; i < opts.N; i++) {
     for (int j = i + 1; j < opts.N; j++) {
-      float val = std::min(1.0f, (rand() % 100) / float(100) + 0.145f);
+      float val = std::min(1.0f, (rand() % 100) / float(100) + 0.17f);
       if ((rand() % 50) < 3)
         val = 0.0f;
       m[i][j] = m[j][i] = val;
