@@ -42,7 +42,7 @@ int Input::generate(GeneratorOpts opts) {
   }
 
   for (int i = 0; i < opts.D; i++) {
-    n[i] = std::max(n[i], 1);
+    n[i] = std::max(n[i] - opts.N / 5, 1);
   }
 
   m.resize(opts.N, std::vector<float>(opts.N));
@@ -198,4 +198,8 @@ Input::Input() { errored = false; }
 
 float score(const Input& input, const std::vector<int>& comission) {
   return input.score(comission);
+}
+
+bool valid(const Input& input, const std::vector<int>& comission) {
+  return input.valid(comission);
 }

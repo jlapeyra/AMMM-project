@@ -38,3 +38,4 @@ struct Input {
 };
 
 float score(const Input& input, const std::vector<int>& comission);
+bool  valid(const Input& input, const std::vector<int>& comission);

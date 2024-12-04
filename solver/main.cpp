@@ -51,6 +51,7 @@ int solve(int argc, char** argv) {
       printf("Comission = ");
       printVector(solution.comission);
       printf("\nScore = %f\n", input.score(solution.comission));
+      printf("\nValid = %d\n", input.valid(solution.comission));
     } else {
       printf("No solution found.");
     }

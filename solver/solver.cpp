@@ -13,6 +13,17 @@ struct TeacherRank {
   float score;
 };
 
+
+std::vector<int> getNotInComission(Input& input, const std::vector<int>& current) {
+  std::vector<int> present(input.N());
+  for (int u : current) present[u] = 1;
+  std::vector<int> notInComission;
+
+  for (int i = 0; i < input.N(); i++)
+    if (!present[i]) notInComission.push_back(i);
+  return notInComission;
+}
+
 bool memberOfComission(const std::vector<int>& comission, int teacher) {
   for (int i = 0; i < comission.size(); i++)
     if (comission[i] == teacher) return true;
@@ -28,7 +39,18 @@ float memberCompatible(const std::vector<int>& comission, Input& input, int memb
   return compat;
 }
 
-std::vector<TeacherRank> findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
+float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
+  std::vector<int> notInComission = getNotInComission(input, current);
+
+  float score = 0.0f;
+  for (int u : notInComission) {
+    score += input.m[u][newTeacher] != 0.0f;
+  }
+  return score * 50.0f;
+}
+
+std::vector<TeacherRank>
+findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, bool allowIncompatible) {
   std::vector<TeacherRank> result;
 
   for (int i = start; i < input.N(); i++) {
@@ -39,9 +61,14 @@ std::vector<TeacherRank> findbestTeachers(int start, const std::vector<int>& com
     //Department fulfilled
     if (dFullfilment[d] == input.n[d]) continue;
 
-    //Member compatibility
-    float score = memberCompatible(comission, input, i);
-    if (score < 0.0f) continue;
+    float score = 0.0f;
+    if (!allowIncompatible) {
+      //Member compatibility
+      score += memberCompatible(comission, input, i);
+      if (score < 0.0f) continue;
+    }
+
+    score += heuristic(input, comission, i);
 
     result.push_back({i, score});
   }
@@ -51,17 +78,23 @@ std::vector<TeacherRank> findbestTeachers(int start, const std::vector<int>& com
   return result;
 }
 
+int bestRequired;
 int iterations;
 int tests;
 
 bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input) {
+  if (requiredTeachers < bestRequired) {
+    printf("New best required = %d\n", requiredTeachers);
+  }
+
+  bestRequired = std::min(requiredTeachers, bestRequired);
   iterations++;
   if (requiredTeachers == 0) {
     tests++;
     return input.validMediation(comission);
   }
 
-  std::vector<TeacherRank> bestTeachers = findbestTeachers(start, comission, dFull, input);
+  std::vector<TeacherRank> bestTeachers = findbestTeachers(start, comission, dFull, input, false);
 
   for (int i = 0; i < bestTeachers.size(); i++) {
     int teacher = bestTeachers[i].teacher;
@@ -90,6 +123,11 @@ SolverSolution solveGreedy(float alpha, Input& input) {
   int requiredTeachers = 0;
 
   for (int i = 0; i < input.D(); i++) { requiredTeachers += input.n[i]; }
+
+  iterations   = 0;
+  tests        = 0;
+  bestRequired = requiredTeachers;
+
   solveRecursive(0, requiredTeachers, comission, currentDepartmentFullfilment, input);
 
   if (verbose) {
@@ -106,9 +144,6 @@ SolverSolution solveGreedy(float alpha, Input& input) {
     printf("Valid = %d\n", valid = input.valid(comission));
     if (valid)
       printf("Score = %f\n", input.score(comission));
-    else {
-      printf("Score = NaN\n");
-    }
   }
   return sol;
 }
@@ -134,14 +169,7 @@ void swapNeighbors(int depth, std::vector<int>& notInComission, Input& input, St
 //Perform n-Swap to generate all feasible neihgbors
 std::vector<State> getNeighbors(Input& input, State& current) {
   std::vector<State> alternatives;
-
-  std::vector<int> present(input.N());
-  for (int u : current) present[u] = 1;
-  std::vector<int> notInComission;
-
-  for (int i = 0; i < input.N(); i++)
-    if (!present[i]) notInComission.push_back(i);
-
+  std::vector<int>   notInComission = getNotInComission(input, current);
 
   swapNeighbors(2, notInComission, input, current, alternatives);
 
