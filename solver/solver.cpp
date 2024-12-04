@@ -5,7 +5,7 @@
 #include "input.hpp"
 #include "util.hpp"
 #include "hill.hpp"
-#include <cstring>
+#include <cmath>
 
 bool verbose = true;
 
@@ -14,7 +14,7 @@ struct TeacherRank {
   float score;
 };
 
-
+/* Returns the vector of teachers who are not in the comission */
 std::vector<int> getNotInComission(Input& input, const std::vector<int>& current) {
   std::vector<int> present(input.N());
   for (int u : current) present[u] = 1;
@@ -25,12 +25,14 @@ std::vector<int> getNotInComission(Input& input, const std::vector<int>& current
   return notInComission;
 }
 
+/* Returns wether a teacher is member of the comission */
 bool memberOfComission(const std::vector<int>& comission, int teacher) {
   for (int i = 0; i < comission.size(); i++)
     if (comission[i] == teacher) return true;
   return false;
 }
 
+/* Returns how much a new member is compatible with the current comission, returns -1.0f if its not compatible */
 float memberCompatible(const std::vector<int>& comission, Input& input, int member) {
   float compat = 0.0f;
   for (int i = 0; i < comission.size(); i++) {
@@ -52,10 +54,10 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
 }
 
 std::vector<TeacherRank>
-findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, bool allowIncompatible) {
+findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
   std::vector<TeacherRank> result;
 
-  for (int i = start; i < input.N(); i++) {
+  for (int i = 0; i < input.N(); i++) {
     //Is already member
     if (memberOfComission(comission, i)) continue;
     int d = input.d[i];
@@ -63,12 +65,9 @@ findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>&
     //Department fulfilled
     if (dFullfilment[d] == input.n[d]) continue;
 
-    float score = 0.0f;
-    if (!allowIncompatible) {
-      //Member compatibility
-      score += memberCompatible(comission, input, i);
-      if (score < 0.0f) continue;
-    }
+    //Member compatibility
+    float score = memberCompatible(comission, input, i);
+    if (score < 0.0f) continue;
 
     score += heuristic(input, comission, i);
 
@@ -85,18 +84,22 @@ int iterations;
 int tests;
 
 bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input) {
+
   if (requiredTeachers < bestRequired) {
-    printf("New best required = %d\n", requiredTeachers);
+    printf("Found comission with %d lacking teachers.\n", requiredTeachers);
   }
 
   bestRequired = std::min(requiredTeachers, bestRequired);
   iterations++;
+
   if (requiredTeachers == 0) {
     tests++;
+
+    //TODO: This should just return true we should optimize this step so we can validate comission state fast in building step
     return input.validMediation(comission);
   }
 
-  std::vector<TeacherRank> bestTeachers = findbestTeachers(start, comission, dFull, input, false);
+  std::vector<TeacherRank> bestTeachers = findbestTeachers(start, comission, dFull, input);
 
   for (int i = 0; i < bestTeachers.size(); i++) {
     int teacher = bestTeachers[i].teacher;
