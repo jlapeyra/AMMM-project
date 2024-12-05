@@ -5,13 +5,13 @@
 #include "input.hpp"
 #include "util.hpp"
 #include "hill.hpp"
-#include <cmath>
 
 bool verbose = true;
 
 struct TeacherRank {
   int   teacher;
   float score;
+  int   d;
 };
 
 /* Returns the vector of teachers who are not in the comission */
@@ -71,7 +71,7 @@ findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>&
 
     score += heuristic(input, comission, i);
 
-    result.push_back({i, score});
+    result.push_back({i, score, d});
   }
 
   //Rank all options based on compatibility with current comission
@@ -94,9 +94,7 @@ bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission
 
   if (requiredTeachers == 0) {
     tests++;
-
-    //TODO: This should just return true we should optimize this step so we can validate comission state fast in building step
-    return input.validMediation(comission);
+    return true;
   }
 
   std::vector<TeacherRank> bestTeachers = findbestTeachers(start, comission, dFull, input);
@@ -108,8 +106,10 @@ bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission
     comission.push_back(teacher);
     dFull[input.d[teacher]]++;
 
-    bool solved = solveRecursive(start + 1, requiredTeachers - 1, comission, dFull, input);
-    if (solved) return solved;
+    if (input.validMediation(comission)) {
+      bool solved = solveRecursive(start + 1, requiredTeachers - 1, comission, dFull, input);
+      if (solved) return solved;
+    }
 
     //Comission remove
     comission.pop_back();
