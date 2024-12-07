@@ -95,23 +95,22 @@ int popTeacher(float alpha, std::set<TeacherRank>& ranking) {
     // Recall that ranking is ordered by score from highest to lowest
     chosen_it = ranking.begin();
   } else {
-    std::vector<std::set<TeacherRank>::iterator> rcl(0); //restricted candidate list for GRASP
-    std::vector<int> rcl_scores(0); //provisional
-    float max_score = ranking.begin()->score;
-    float min_score = ranking.rbegin()->score;
-    float threshold =  max_score - alpha*(max_score-min_score);
-    for (auto it = ranking.begin(); 
-         it != ranking.end() && it->score >= threshold; 
-         it = next(it)) 
-    {
+    std::vector<std::set<TeacherRank>::iterator> rcl(0);        //restricted candidate list for GRASP
+    std::vector<int>                             rcl_scores(0); //provisional
+    float                                        max_score = ranking.begin()->score;
+    float                                        min_score = ranking.rbegin()->score;
+    float                                        threshold = max_score - alpha * (max_score - min_score);
+    for (auto it = ranking.begin();
+         it != ranking.end() && it->score >= threshold;
+         it = next(it)) {
       rcl.push_back(it);
       rcl_scores.push_back(it->score);
     }
-    chosen_it = rcl[rand()%rcl.size()];
+    chosen_it = rcl[rand() % rcl.size()];
+    /*
     printf("\tTop scores: ");
     printVector(rcl_scores);
-    printf(". Chosen score: %f\n", chosen_it->score);
-
+    printf(". Chosen score: %f\n", chosen_it->score); */
   }
   int teacher = chosen_it->teacher;
   ranking.erase(chosen_it);
@@ -264,12 +263,12 @@ SolverSolution solve(float alpha, Input& input) {
 // PRE: 0 <= alpha <= 1
 SolverSolution solveGRASP(int num_iterations, float alpha, Input& input) {
   SolverSolution best_sol;
-  float best_fitness = -1.0;
+  float          best_fitness = -1.0;
   for (int i = 0; i < num_iterations; i++) {
     SolverSolution sol = solve(alpha, input);
     if (sol.fitness > best_fitness) {
       best_fitness = sol.fitness;
-      best_sol = sol;
+      best_sol     = sol;
     }
   }
   return best_sol;
