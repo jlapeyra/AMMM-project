@@ -5,13 +5,36 @@
 #include "input.hpp"
 #include "util.hpp"
 #include "hill.hpp"
+#include <cstdint>
+#include <unordered_set>
 
 bool verbose = true;
 
 struct TeacherRank {
   int   teacher;
   float score;
-  int   d;
+};
+
+struct Tabu {
+  std::unordered_set<uint64_t> testedComissions;
+
+  uint64_t computeKey(const std::vector<int>& comission) {
+    uint64_t xorVal = 0;
+    uint64_t sumVal = 0;
+    for (int u : comission) {
+      xorVal ^= u;
+      sumVal += u;
+    }
+    return (xorVal + 2) * (sumVal + 2);
+  }
+
+  void addComission(const std::vector<int>& comission) {
+    testedComissions.insert(computeKey(comission));
+  }
+
+  bool hasComission(const std::vector<int>& comission) {
+    return testedComissions.count(computeKey(comission));
+  }
 };
 
 /* Returns the vector of teachers who are not in the comission */
@@ -48,13 +71,13 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   float score = 0.0f;
   for (int u : notInComission) {
     score += 5 * (input.m[u][newTeacher] > 0.15f);
-    score += input.m[u][newTeacher] != 0.0f;
+    score += 15 * (input.m[u][newTeacher] != 0.0f);
   }
   return score * 50.0f;
 }
 
-std::vector<TeacherRank>
-findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
+std::vector<TeacherRank> findbestTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
+
   std::vector<TeacherRank> result;
 
   for (int i = 0; i < input.N(); i++) {
@@ -71,7 +94,16 @@ findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>&
 
     score += heuristic(input, comission, i);
 
-    result.push_back({i, score, d});
+    comission.push_back(i);
+    if (tabu.hasComission(comission)) {
+      comission.pop_back();
+      continue;
+    }
+
+    tabu.addComission(comission);
+    comission.pop_back();
+
+    result.push_back({i, score});
   }
 
   //Rank all options based on compatibility with current comission
@@ -81,10 +113,9 @@ findbestTeachers(int start, const std::vector<int>& comission, std::vector<int>&
 
 int bestRequired;
 int iterations;
-int tests;
+int backtracks;
 
-bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input) {
-
+bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input, Tabu& tabu) {
   if (requiredTeachers < bestRequired) {
     printf("Found comission with %d lacking teachers.\n", requiredTeachers);
   }
@@ -93,11 +124,10 @@ bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission
   iterations++;
 
   if (requiredTeachers == 0) {
-    tests++;
     return true;
   }
 
-  std::vector<TeacherRank> bestTeachers = findbestTeachers(start, comission, dFull, input);
+  std::vector<TeacherRank> bestTeachers = findbestTeachers(comission, dFull, input, tabu);
 
   for (int i = 0; i < bestTeachers.size(); i++) {
     int teacher = bestTeachers[i].teacher;
@@ -107,9 +137,10 @@ bool solveRecursive(int start, int requiredTeachers, std::vector<int>& comission
     dFull[input.d[teacher]]++;
 
     if (input.validMediation(comission)) {
-      bool solved = solveRecursive(start + 1, requiredTeachers - 1, comission, dFull, input);
+      bool solved = solveRecursive(requiredTeachers - 1, comission, dFull, input, tabu);
       if (solved) return solved;
     }
+    backtracks++;
 
     //Comission remove
     comission.pop_back();
@@ -130,14 +161,14 @@ SolverSolution solveGreedy(float alpha, Input& input) {
   for (int i = 0; i < input.D(); i++) { requiredTeachers += input.n[i]; }
 
   iterations   = 0;
-  tests        = 0;
   bestRequired = requiredTeachers;
+  Tabu tabu;
 
-  solveRecursive(0, requiredTeachers, comission, currentDepartmentFullfilment, input);
+  solveRecursive(requiredTeachers, comission, currentDepartmentFullfilment, input, tabu);
 
   if (verbose) {
     printf("Iterations = %d\n", iterations);
-    printf("Tests = %d\n", tests);
+    printf("Backtracks = %d\n", backtracks);
     printf("Comission = ");
     printVector(comission);
     printf("\n");
