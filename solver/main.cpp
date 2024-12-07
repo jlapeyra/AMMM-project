@@ -55,6 +55,7 @@ int solve(int argc, char** argv) {
     } else {
       printf("No solution found.");
     }
+
     i++;
   }
   return 0;

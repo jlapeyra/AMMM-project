@@ -1,9 +1,11 @@
 #include "input.hpp"
+#include <algorithm>
 #include <fstream>
 #include <cstdio>
 #include "parser.hpp"
 #include <iostream>
 #include "util.hpp"
+#include <random>
 #include <set>
 
 // Function to write a std::string to a file
@@ -32,18 +34,23 @@ std::string readFromFile(const std::string& filePath) {
 int Input::generate(GeneratorOpts opts) {
   clear();
 
-  n.resize(opts.D);
+  n.resize(opts.D, 0);
+  d.resize(opts.N, 0);
 
-  for (int i = 0; i < opts.N; i++) {
-    int x = rand() % opts.D;
-    d.push_back(x);
-    if ((rand() % 10) < 6)
-      n[x]++;
+  int maxTeachers = opts.N / (opts.D * 3);
+  int t           = 0;
+  for (int i = 0; i < n.size(); i++) {
+    n[i] = std::max(rand() % maxTeachers, 1);
+    for (int j = 0; j < n[i]; j++) {
+      d[t++] = i;
+    }
   }
 
-  for (int i = 0; i < opts.D; i++) {
-    n[i] = std::max(n[i] - opts.N / 5, 1);
+  for (int i = t; i < opts.N; i++) {
+    d[i] = rand() % opts.D;
   }
+
+  //  std::shuffle(d.begin(), d.end(), std::default_random_engine(0));
 
   m.resize(opts.N, std::vector<float>(opts.N));
   for (int i = 0; i < opts.N; i++) {

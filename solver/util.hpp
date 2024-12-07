@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <iostream>
 template <typename T>
-void printVector(std::vector<T>& v) {
+void printVector(const std::vector<T>& v) {
   if (v.size() == 0) {
     printf("[]");
     return;
