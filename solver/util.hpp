@@ -15,6 +15,6 @@ void printVector(const std::vector<T>& v) {
   }
   if (v.size()) {
     std::cout << v[v.size() - 1];
-    printf(" ]");
+    printf("]");
   }
 }

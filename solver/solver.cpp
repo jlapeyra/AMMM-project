@@ -1,6 +1,7 @@
 #include "solver.hpp"
 #include <cstdio>
 #include <vector>
+#include <set>
 #include <algorithm>
 #include "input.hpp"
 #include "util.hpp"
@@ -13,6 +14,11 @@ bool verbose = true;
 struct TeacherRank {
   int   teacher;
   float score;
+
+  //Used for sorting: teacher with higher score goes first
+  bool operator<(const TeacherRank& other) const {
+    return this->score > other.score;
+  }
 };
 
 struct Tabu {
@@ -76,7 +82,7 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   return score * 50.0f;
 }
 
-std::vector<TeacherRank> findbestTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
+std::vector<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
 
   std::vector<TeacherRank> result;
 
@@ -106,16 +112,52 @@ std::vector<TeacherRank> findbestTeachers(std::vector<int>& comission, std::vect
     result.push_back({i, score});
   }
 
-  //Rank all options based on compatibility with current comission
-  std::sort(result.begin(), result.end(), [](const auto& lhs, const auto& rhs) { return lhs.score > rhs.score; });
   return result;
+}
+
+int popTeacher(float alpha, std::set<TeacherRank>& ranking) {
+  // return t.teacher where t is a random selection of RCL
+  //    where RCL = {t ∊ ranking | t.score ≥ max_score - alpha*(max_score-min_score)}
+  //    where max_score = max({t.score | t ∊ ranking})
+  //    where min_score = min({t.score | t ∊ ranking})
+
+  std::set<TeacherRank>::iterator chosen_it;
+  if (alpha == 0) {
+    // Special case: t.score ≥ max_score
+    // Recall that ranking is ordered by score from highest to lowest
+    chosen_it = ranking.begin();
+  } else {
+    std::vector<std::set<TeacherRank>::iterator> rcl(0);        //restricted candidate list for GRASP
+    std::vector<int>                             rcl_scores(0); //provisional
+    float                                        max_score = ranking.begin()->score;
+    float                                        min_score = ranking.rbegin()->score;
+    float                                        threshold = max_score - alpha * (max_score - min_score);
+    for (auto it = ranking.begin();
+         it != ranking.end() && it->score >= threshold;
+         it = next(it)) {
+      rcl.push_back(it);
+      rcl_scores.push_back(it->score);
+    }
+    chosen_it = rcl[rand() % rcl.size()];
+    /*
+    printf("\tTop scores: ");
+    printVector(rcl_scores);
+    printf(". Chosen score: %f\n", chosen_it->score); */
+  }
+  int teacher = chosen_it->teacher;
+  ranking.erase(chosen_it);
+  return teacher;
 }
 
 int bestRequired;
 int iterations;
 int backtracks;
 
-bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input, Tabu& tabu) {
+bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input, Tabu& tabu) {
+  //INV: requiredTeachers = sum(input.n) - comission.size()
+  //INV: bestRequired = minimal value found so far in the algorithm
+  //INV: iterations = number of calls to solveRecursive
+
   if (requiredTeachers < bestRequired) {
     printf("Found comission with %d lacking teachers.\n", requiredTeachers);
   }
@@ -127,17 +169,19 @@ bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vect
     return true;
   }
 
-  std::vector<TeacherRank> bestTeachers = findbestTeachers(comission, dFull, input, tabu);
+  std::vector<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input, tabu);
 
-  for (int i = 0; i < bestTeachers.size(); i++) {
-    int teacher = bestTeachers[i].teacher;
+  //ordered set of teachers sorted by score (higher score first)
+  set<TeacherRank> rankedTeachers(scoredTeachers.begin(), scoredTeachers.end());
+  while (!rankedTeachers.empty()) {
+    int teacher = popTeacher(alpha, rankedTeachers);
 
     //Comission add
     comission.push_back(teacher);
     dFull[input.d[teacher]]++;
 
     if (input.validMediation(comission)) {
-      bool solved = solveRecursive(requiredTeachers - 1, comission, dFull, input, tabu);
+      bool solved = solveRecursive(alpha, requiredTeachers - 1, comission, dFull, input, tabu);
       if (solved) return solved;
     }
     backtracks++;
@@ -146,8 +190,23 @@ bool solveRecursive(int requiredTeachers, std::vector<int>& comission, std::vect
     comission.pop_back();
     dFull[input.d[teacher]]--;
   }
-
   return false;
+
+  /* 
+  //Slightly more efficient version for special case where alpha = 0 (local search without grasp)
+  if (alpha == 0.0f) {
+    //sort teachers by score (higher score first)
+    std::sort(scoredTeachers.begin(), scoredTeachers.end()); // [](const auto& lhs, const auto& rhs) { return lhs.score > rhs.score; }  );
+    for (int i = 0; i < scoredTeachers.size(); i++) {
+      int teacher = scoredTeachers[i].teacher;
+      ...
+    }
+  else {
+    set<TeacherRank> rankedTeachers(scoredTeachers.begin(), scoredTeachers.end());
+    ...
+  }
+  return false;
+  */
 }
 
 /** Greedy solver **/
@@ -164,11 +223,10 @@ SolverSolution solveGreedy(float alpha, Input& input) {
   bestRequired = requiredTeachers;
   Tabu tabu;
 
-  solveRecursive(requiredTeachers, comission, currentDepartmentFullfilment, input, tabu);
+  solveRecursive(alpha, requiredTeachers, comission, currentDepartmentFullfilment, input, tabu);
 
   if (verbose) {
     printf("Iterations = %d\n", iterations);
-    printf("Backtracks = %d\n", backtracks);
     printf("Comission = ");
     printVector(comission);
     printf("\n");
@@ -212,10 +270,12 @@ std::vector<State> getNeighbors(Input& input, State& current) {
   return alternatives;
 }
 
-/* General solver */
+/* Local Search solver */
 SolverSolution solve(float alpha, Input& input) {
   SolverSolution sol;
+  printf("Construction phase:\n");
   sol = solveGreedy(alpha, input);
+  printf("Local Search:\n");
   if (sol.comission.size()) {
     if (verbose)
       printf("Executing hill climbing:\n");
@@ -231,4 +291,20 @@ SolverSolution solve(float alpha, Input& input) {
     }
   }
   return sol;
+}
+
+/* GRASP solver */
+// PRE: num_iterations >= 1
+// PRE: 0 <= alpha <= 1
+SolverSolution solveGRASP(int num_iterations, float alpha, Input& input) {
+  SolverSolution best_sol;
+  float          best_fitness = -1.0;
+  for (int i = 0; i < num_iterations; i++) {
+    SolverSolution sol = solve(alpha, input);
+    if (sol.fitness > best_fitness) {
+      best_fitness = sol.fitness;
+      best_sol     = sol;
+    }
+  }
+  return best_sol;
 }
