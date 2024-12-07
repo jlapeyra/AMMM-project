@@ -82,7 +82,7 @@ int Input::read(const string& file) {
 }
 
 void Input::save() {
-  printf("%s\n", toString(*this).c_str());
+  std::cout << toString(*this);
 }
 
 bool Input::compatibleMemmber(const std::vector<int>& comission, int newMember) const {

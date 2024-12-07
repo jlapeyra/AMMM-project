@@ -100,14 +100,14 @@ Input fromString(const string& input) {
   }
 
   if (data.N() != N) {
-    dprintf(2, "[PARSER] Mismatch N : real %d, theoretical %d\n", data.N(), N);
+    std::cout << "[PARSER] Mismatch N : real "<< data.N() <<", theoretical "<< N <<"\n";
     Input error;
     error.errored = true;
     return error;
   }
 
   if (data.D() != D) {
-    dprintf(2, "[PARSER] Mismatch D : real %d, theoretical %d\n", data.D(), D);
+    std::cout << "[PARSER] Mismatch D : real "<< data.D() <<", theoretical "<< D <<"\n";
     Input error;
     error.errored = true;
     return error;

@@ -9,7 +9,7 @@ int generate(int argc, char** argv) {
   GeneratorOpts opts;
 
   if (argc < 4) {
-    dprintf(2, "Not enough arguments\n");
+    std::cout << "Not enough arguments\n";
     return 1;
   }
 
@@ -23,7 +23,7 @@ int generate(int argc, char** argv) {
   } while (!input.valid());
   input.save();
 
-  dprintf(2, "Iterations: %d\n", iterations);
+  std::cout << "Iterations: " << iterations << "\n";
 
   return 0;
 }
@@ -32,7 +32,7 @@ int solve(int argc, char** argv) {
   Input input;
 
   if (argc < 3) {
-    dprintf(2, "Not enough arguments\n");
+    std::cout << "Not enough arguments\n";
     return 1;
   }
 
@@ -40,7 +40,7 @@ int solve(int argc, char** argv) {
   while (argv[i]) {
     input.clear();
     if (input.read(std::string(argv[i]))) {
-      dprintf(2, "Error reading input file\n");
+      std::cout << "Error reading input file\n";
       return 1;
     }
     input.print();
@@ -64,9 +64,9 @@ int main(int argc, char** argv) {
 
   srand(time(0));
   if (argc < 2) {
-    dprintf(2, "You need to provide an operation to execute.\n");
-    dprintf(2, "1) Generate a random problem of size <N> <D>\n");
-    dprintf(2, "2) Solve problem <P>\n");
+    std::cout << "You need to provide an operation to execute.\n";
+    std::cout << "1) Generate a random problem of size <N> <D>\n";
+    std::cout << "2) Solve problem <P>\n";
     return 1;
   }
 
