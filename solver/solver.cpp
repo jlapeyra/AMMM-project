@@ -54,7 +54,7 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   float score = 0.0f;
   for (int u : notInComission) {
     score += 5 * (input.m[u][newTeacher] > 0.15f);
-    score += input.m[u][newTeacher] != 0.0f;
+    score += 15 * (input.m[u][newTeacher] != 0.0f);
   }
   return score * 50.0f;
 }
