@@ -25,7 +25,7 @@ struct Tabu {
       xorVal ^= u;
       sumVal += u;
     }
-    return (xorVal + 2) * (sumVal + 2);
+    return (xorVal + 2) * (sumVal + 2) + (sumVal + 2);
   }
 
   void addComission(const std::vector<int>& comission) {
