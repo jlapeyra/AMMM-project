@@ -3,6 +3,7 @@
 #include "solver.hpp"
 #include <time.h>
 #include "util.hpp"
+#include <cassert>
 
 int generate(int argc, char** argv) {
   Input         input;
@@ -32,7 +33,7 @@ int solve(int argc, char** argv) {
   Input input;
 
   if (argc < 3) {
-    std::cout << "Not enough arguments\n";
+    std::cout << "Not enough arguments: expected <P>\n";
     return 1;
   }
 
@@ -61,17 +62,53 @@ int solve(int argc, char** argv) {
   return 0;
 }
 
+int solveGRASP(int argc, char** argv) {
+  Input input;
+
+  if (argc < 5) {
+    std::cout << "Not enough arguments: expected <P> <I> <A>\n";
+    return 1;
+  }
+
+  input.clear();
+  if (input.read(std::string(argv[2]))) {
+    std::cout << "Error reading input file\n";
+    return 1;
+  }
+  int   num_iterations = std::atoi(argv[3]);
+  float alpha          = std::atof(argv[4]);
+  assert(0 <= alpha && alpha <= 1);
+  assert(num_iterations >= 1);
+
+  input.print();
+
+  auto solution = solveGRASP(num_iterations, alpha, input);
+
+  if (solution.comission.size()) {
+    printf("Comission = ");
+    printVector(solution.comission);
+    printf("\nScore = %f\n", input.score(solution.comission));
+    printf("\nValid = %d\n", input.valid(solution.comission));
+  } else {
+    printf("No solution found.");
+  }
+
+  return 0;
+}
+
 int main(int argc, char** argv) {
 
   srand(time(0));
   if (argc < 2) {
     std::cout << "You need to provide an operation to execute.\n";
     std::cout << "1) Generate a random problem of size <N> <D>\n";
-    std::cout << "2) Solve problem <P>\n";
+    std::cout << "2) Solve problem <P> using local search\n";
+    std::cout << "3) Solve problem <P> using GRASP with <I> iterations and alpha <A>\n";
     return 1;
   }
 
   int option = std::atoi(argv[1]);
   if (option == 1) return generate(argc, argv);
   if (option == 2) return solve(argc, argv);
+  if (option == 3) return solveGRASP(argc, argv);
 }

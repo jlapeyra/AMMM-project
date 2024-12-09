@@ -13,6 +13,7 @@ struct SolverSolution {
   std::vector<int> comission;
 };
 
+std::vector<State> getNeighbors(Input& input, State& current);
 SolverSolution     solveGreedy(float alpha, Input& input);
 SolverSolution     solve(float alpha, Input& input);
-std::vector<State> getNeighbors(Input& input, State& current);
+SolverSolution     solveGRASP(int num_iterations, float alpha, Input& input);
