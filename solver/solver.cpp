@@ -87,9 +87,9 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   return score * 50.0f;
 }
 
-std::vector<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
+std::set<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
 
-  std::vector<TeacherRank> result;
+  std::set<TeacherRank> result;
 
   for (int i = 0; i < input.N(); i++) {
     //Is already member
@@ -117,11 +117,8 @@ std::vector<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<
       comission.pop_back();
     }
 
-    result.push_back({i, score});
+    result.insert({i, score});
   }
-
-  std::sort(result.begin(), result.end());
-
   return result;
 }
 
@@ -149,10 +146,6 @@ int popTeacher(float alpha, std::set<TeacherRank>& ranking) {
       rcl_scores.push_back(it->score);
     }
     chosen_it = rcl[rand() % rcl.size()];
-    /*
-    printf("\tTop scores: ");
-    printVector(rcl_scores);
-    printf(". Chosen score: %f\n", chosen_it->score); */
   }
   int teacher = chosen_it->teacher;
   ranking.erase(chosen_it);
@@ -180,26 +173,10 @@ bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comissi
     return true;
   }
 
-  std::vector<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input, tabu);
+  std::set<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input, tabu);
 
-  if (alpha <= 1.0f && scoredTeachers.size() != 0) {
-    float max_score = scoredTeachers[0].score;
-    float min_score = scoredTeachers[scoredTeachers.size() - 1].score;
-    float threshold = max_score - alpha * (max_score - min_score);
-
-    //Filter all teachers with bigger than threshold
-    std::vector<TeacherRank> rcl;
-    for (int i = 0; i < scoredTeachers.size(); i++) {
-      if (scoredTeachers[i].score >= threshold) rcl.push_back(scoredTeachers[i]);
-    }
-
-    //Randomize final candidates (we have to pick them randomly from the rcl)
-    std::shuffle(rcl.begin(), rcl.end(), randEngine);
-    std::swap(rcl, scoredTeachers);
-  }
-
-  for (int i = 0; i < scoredTeachers.size(); i++) {
-    int teacher = scoredTeachers[i].teacher;
+  while (scoredTeachers.size()) {
+    int teacher = popTeacher(alpha, scoredTeachers);
 
     //Comission add
     comission.push_back(teacher);
