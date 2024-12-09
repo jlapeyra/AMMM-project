@@ -5,6 +5,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <chrono>
 #include "input.hpp"
 #include "util.hpp"
 #include "hill.hpp"
@@ -87,9 +88,9 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   return score * 50.0f;
 }
 
-std::vector<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
+std::set<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
 
-  std::vector<TeacherRank> result;
+  std::set<TeacherRank> result;
 
   for (int i = 0; i < input.N(); i++) {
     //Is already member
@@ -117,11 +118,8 @@ std::vector<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<
       comission.pop_back();
     }
 
-    result.push_back({i, score});
+    result.insert({i, score});
   }
-
-  std::sort(result.begin(), result.end());
-
   return result;
 }
 
@@ -146,13 +144,8 @@ int popTeacher(float alpha, std::set<TeacherRank>& ranking) {
          it != ranking.end() && it->score >= threshold;
          it = next(it)) {
       rcl.push_back(it);
-      rcl_scores.push_back(it->score);
     }
     chosen_it = rcl[rand() % rcl.size()];
-    /*
-    printf("\tTop scores: ");
-    printVector(rcl_scores);
-    printf(". Chosen score: %f\n", chosen_it->score); */
   }
   int teacher = chosen_it->teacher;
   ranking.erase(chosen_it);
@@ -170,7 +163,7 @@ bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comissi
   //INV: iterations = number of calls to solveRecursive
 
   if (requiredTeachers < bestRequired) {
-    printf("Found comission with %d lacking teachers.\n", requiredTeachers);
+    printf("\tFound comission with %d teachers missing.\n", requiredTeachers);
   }
 
   bestRequired = std::min(requiredTeachers, bestRequired);
@@ -180,26 +173,10 @@ bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comissi
     return true;
   }
 
-  std::vector<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input, tabu);
+  std::set<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input, tabu);
 
-  if (alpha != 0.0f && scoredTeachers.size() != 0) {
-    float max_score = scoredTeachers[0].score;
-    float min_score = scoredTeachers[scoredTeachers.size() - 1].score;
-    float threshold = max_score - alpha * (max_score - min_score);
-
-    //Filter all teachers with bigger than threshold
-    std::vector<TeacherRank> rcl;
-    for (int i = 0; i < scoredTeachers.size(); i++) {
-      if (scoredTeachers[i].score >= threshold) rcl.push_back(scoredTeachers[i]);
-    }
-
-    //Randomize final candidates (we have to pick them randomly from the rcl)
-    std::shuffle(rcl.begin(), rcl.end(), randEngine);
-    std::swap(rcl, scoredTeachers);
-  }
-
-  for (int i = 0; i < scoredTeachers.size(); i++) {
-    int teacher = scoredTeachers[i].teacher;
+  while (scoredTeachers.size()) {
+    int teacher = popTeacher(alpha, scoredTeachers);
 
     //Comission add
     comission.push_back(teacher);
@@ -249,20 +226,21 @@ SolverSolution solveGreedy(float alpha, Input& input) {
   Tabu tabu;
 
   solveRecursive(alpha, requiredTeachers, comission, currentDepartmentFullfilment, input, tabu);
+  sol.satisfied = input.valid(comission);
+  sol.fitness   = input.score(comission);
 
   if (verbose) {
-    printf("Iterations = %d\n", iterations);
-    printf("Comission = ");
+    printf("\tIterations = %d\n", iterations);
+    printf("\tComission = ");
     printVector(comission);
     printf("\n");
 
-    int valid;
-    printf("Valid compatibility = %d\n", input.validCompatibility(comission));
-    printf("Valid department fullfilment = %d\n", input.validDepartment(comission));
-    printf("Valid mediation = %d\n", input.validMediation(comission));
-    printf("Valid = %d\n", valid = input.valid(comission));
-    if (valid)
-      printf("Score = %f\n", input.score(comission));
+    printf("\tValid compatibility = %d\n", input.validCompatibility(comission));
+    printf("\tValid department fullfilment = %d\n", input.validDepartment(comission));
+    printf("\tValid mediation = %d\n", input.validMediation(comission));
+    printf("\tValid = %d\n", sol.satisfied);
+    if (sol.satisfied)
+      printf("\tScore = %f\n", input.score(comission));
   }
   return sol;
 }
@@ -303,7 +281,7 @@ SolverSolution solve(float alpha, Input& input) {
   printf("Local Search:\n");
   if (sol.comission.size()) {
     if (verbose)
-      printf("Executing hill climbing:\n");
+      printf("\tExecuting hill climbing:\n");
 
     OptimizationResult result = optimize(input, sol.comission, getNeighbors, score);
 
@@ -311,8 +289,8 @@ SolverSolution solve(float alpha, Input& input) {
     sol.fitness   = score(input, result.state);
 
     if (verbose) {
-      printf("Iterations = %d\n", result.iterations);
-      printf("Newscore = %f\n", sol.fitness);
+      printf("\tIterations = %d\n", result.iterations);
+      printf("\tNewscore = %f\n", sol.fitness);
     }
   }
   return sol;
@@ -321,15 +299,28 @@ SolverSolution solve(float alpha, Input& input) {
 /* GRASP solver */
 // PRE: num_iterations >= 1
 // PRE: 0 <= alpha <= 1
-SolverSolution solveGRASP(int num_iterations, float alpha, Input& input) {
+SolverSolution solveGRASP(int num_iterations, float alpha, Input& input, std::vector<Progress>& history) {
   SolverSolution best_sol;
   float          best_fitness = -1.0;
+  history                     = std::vector<Progress>(0);
+  auto start                  = std::chrono::high_resolution_clock::now();
+
   for (int i = 0; i < num_iterations; i++) {
     SolverSolution sol = solve(alpha, input);
     if (sol.fitness > best_fitness) {
       best_fitness = sol.fitness;
       best_sol     = sol;
     }
+    auto                          end      = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time     = end - start;
+    float                         time_sec = time.count();
+    history.push_back({time_sec, best_fitness});
   }
   return best_sol;
+}
+
+
+SolverSolution solveGRASP(int num_iterations, float alpha, Input& input) {
+  std::vector<Progress> history(0);
+  return solveGRASP(num_iterations, alpha, input, history);
 }
