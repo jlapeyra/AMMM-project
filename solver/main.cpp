@@ -4,6 +4,7 @@
 #include <time.h>
 #include "util.hpp"
 #include <cassert>
+#include "test.hpp"
 
 int generate(int argc, char** argv) {
   Input         input;
@@ -75,8 +76,8 @@ int solveGRASP(int argc, char** argv) {
     std::cout << "Error reading input file\n";
     return 1;
   }
-  int num_iterations = std::atoi(argv[3]);
-  float alpha = std::atof(argv[4]);
+  int   num_iterations = std::atoi(argv[3]);
+  float alpha          = std::atof(argv[4]);
   assert(0 <= alpha && alpha <= 1);
   assert(num_iterations >= 1);
 
@@ -94,7 +95,8 @@ int solveGRASP(int argc, char** argv) {
   }
 
   return 0;
-} 
+}
+
 
 int main(int argc, char** argv) {
 
@@ -104,6 +106,7 @@ int main(int argc, char** argv) {
     std::cout << "1) Generate a random problem of size <N> <D>\n";
     std::cout << "2) Solve problem <P> using local search\n";
     std::cout << "3) Solve problem <P> using GRASP with <I> iterations and alpha <A>\n";
+    std::cout << "4) Test a set of instances, save tha data to the provided filename <O>\n";
     return 1;
   }
 
@@ -111,4 +114,5 @@ int main(int argc, char** argv) {
   if (option == 1) return generate(argc, argv);
   if (option == 2) return solve(argc, argv);
   if (option == 3) return solveGRASP(argc, argv);
+  if (option == 4) return test(argc, argv);
 }
