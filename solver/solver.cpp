@@ -19,13 +19,16 @@ struct Tabu {
   std::unordered_set<uint64_t> testedComissions;
 
   uint64_t computeKey(const std::vector<int>& comission) {
-    uint64_t xorVal = 0;
+    uint64_t mulval = 1;
     uint64_t sumVal = 0;
+
     for (int u : comission) {
-      xorVal ^= u;
+      mulval *= (u + 2);
       sumVal += u;
     }
-    return (xorVal + 2) * (sumVal + 2) + (sumVal + 2);
+
+    uint64_t hash = mulval + sumVal + comission.size();
+    return hash;
   }
 
   void addComission(const std::vector<int>& comission) {
