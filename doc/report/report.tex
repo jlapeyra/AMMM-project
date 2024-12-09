@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{algpseudocode}
+\usepackage{float}
+
+\title{%
+  Algorithmic Methods for Mathematical Models\\
+  \large COURSE PROJECT }
+\author{David Garcia Tejeda \and Joan Lapeyra}
+\date{\today}
+\geometry{margin=1in}
+
+\begin{document}
+
+\maketitle
+
+\section{Formulation}
+Some text
+\section{Implementation}
+\section{Integer Linear Programming Model}
+\section{Constructive Greedy}
+
+For the Constructive Greedy we have opt for a recursive solution, at every recursive step we try to increase our current comission by one member. If we failed in the construction of the comission (our choices let to an unsolvable step) we backtrack until we are again with a partial solution.
+
+We will explain the main algorithm and any subsequent auxiliar function that we are using.
+
+\begin{algorithmic}[H]
+\Function{solve}{commission, input, blacklist} \textbf{: Set}
+    \If{\Call{comissionIsReady}{input, commission}}
+        \State \Return commission
+    \EndIf
+    \State candidateSet $\gets$ \Call{getAllCandidates}{input, commission, blacklist}
+    \ForAll{\textbf{candidate} $\in$ candidateSet}
+        \State result $\gets$ \Call{solve}{candidate.commission, input, blacklist}
+        \If{\textbf{result is not} $\emptyset$ }
+            \State \Return result
+        \EndIf
+    \EndFor
+    \State \Return $\emptyset$
+\EndFunction
+\end{algorithmic}
+
+\begin{itemize}
+  \item Our function receives as input the current partial solution, comission, the input of the problem (With all the input variables) and a blacklist set.
+  \item First we test if our partial solution is indeed a complete solution, if it is return as the result of the algorithm.
+  \item We define a candidate as the current partial comission increased by one member who was not in the comission, this new partial comission is guaranteed to be respect all problem restrictions.
+  \item We compute every candidate from our current comission and store them all sorted in our candidateSet. Next we will try each candidate in order, calling recursively the routine solve to advance our comission construction.
+  \item Once we exit the function solve, by induction, we either have found a complete comission in which case we return the solution, or proved that no valid complete comission can be found using this candidate, in which case we continue to the next candidate.
+  \item Once we have tested every candidate we have proved that this partial comission cannot yield any complete comission, then we return empty set.
+\end{itemize}
+
+\begin{algorithmic}[H]
+\Function{getAllCandidates}{input, commission, blacklist} \textbf{: Set}
+    \State candidateSet $\gets \emptyset$
+    \For{\textbf{newMember} $\in  input.members - comission $ }
+        \State candidate $\gets$ \Call{newCommission}{commission, newMember}
+        \If{\Call{validCandidate}{candidate} \textbf{and} $\neg$ \Call{blacklist.has}{candidate}}
+            \State candidateScore $\gets$ \Call{candidateComputeScore}{candidate, input}
+            \State \Call{blacklist.add}{candidate}
+            \State \Call{candidateSet.add}{\{commission $=$ candidate, score $=$ candidateScore\}}
+        \EndIf
+    \EndFor
+    \State \Call{candidateSet.sort}{\textbf{descending order of score}}
+    \State \Return candidateSet
+\EndFunction
+\end{algorithmic}
+
+To get all candidates 
+
+\begin{algorithmic}[H]
+\Function{validCandidate}{commission} \textbf{: Boolean}
+    \State \Return \Call{allMembersCompatible}{commission} \textbf{and} \Call{allDepartmentsNotOverflown} 
+\EndFunction
+\end{algorithmic}
+
+\begin{algorithmic}[H]
+\Function{candidateComputeScore}{commission} \textbf{: Float}
+    \State finalScore $\gets$ \Call{finalScoreFormula}{commission}
+    \State heuristic $\gets$ \Call{heuristicFormula}{commission}
+    \State \Return finalScore $+$ heuristic
+\EndFunction
+\end{algorithmic}
+
+\begin{algorithmic}[H]
+\State \Call{solve}{[], input, []}
+\end{algorithmic}
+
+\section{Local search}
+\section{GRASP}
+\section{Results comparison}
+\end{document}
