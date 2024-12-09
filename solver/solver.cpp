@@ -182,7 +182,7 @@ bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comissi
 
   std::vector<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input, tabu);
 
-  if (alpha != 0.0f && scoredTeachers.size() != 0) {
+  if (alpha <= 1.0f && scoredTeachers.size() != 0) {
     float max_score = scoredTeachers[0].score;
     float min_score = scoredTeachers[scoredTeachers.size() - 1].score;
     float threshold = max_score - alpha * (max_score - min_score);

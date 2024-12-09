@@ -46,7 +46,7 @@ int solve(int argc, char** argv) {
     }
     input.print();
 
-    auto solution = solve(1.0f, input);
+    auto solution = solve(1.5f, input);
 
     if (solution.comission.size()) {
       printf("Comission = ");
