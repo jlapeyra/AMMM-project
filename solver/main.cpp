@@ -75,8 +75,8 @@ int solveGRASP(int argc, char** argv) {
     std::cout << "Error reading input file\n";
     return 1;
   }
-  int num_iterations = std::atoi(argv[3]);
-  float alpha = std::atof(argv[4]);
+  int   num_iterations = std::atoi(argv[3]);
+  float alpha          = std::atof(argv[4]);
   assert(0 <= alpha && alpha <= 1);
   assert(num_iterations >= 1);
 
@@ -94,7 +94,7 @@ int solveGRASP(int argc, char** argv) {
   }
 
   return 0;
-} 
+}
 
 int main(int argc, char** argv) {
 

@@ -1,22 +1,50 @@
 #include "solver.hpp"
 #include <cstdio>
+#include <random>
+#include <utility>
 #include <vector>
 #include <set>
 #include <algorithm>
 #include "input.hpp"
 #include "util.hpp"
 #include "hill.hpp"
+#include <cstdint>
+#include <unordered_set>
 
 bool verbose = true;
 
 struct TeacherRank {
   int   teacher;
   float score;
-  int   d;
 
   //Used for sorting: teacher with higher score goes first
   bool operator<(const TeacherRank& other) const {
     return this->score > other.score;
+  }
+};
+
+struct Tabu {
+  std::unordered_set<uint64_t> testedComissions;
+
+  //Hashes a vector order independently, that means that all permutations of vector V give the same hash
+  uint64_t computeKey(const std::vector<int>& comission) {
+    uint64_t mulval = 1;
+    uint64_t sumVal = 0;
+
+    for (int u : comission) {
+      mulval *= (u + 2);
+      sumVal += u;
+    }
+    uint64_t hash = mulval + sumVal + comission.size();
+    return hash;
+  }
+
+  void addComission(const std::vector<int>& comission) {
+    testedComissions.insert(computeKey(comission));
+  }
+
+  bool hasComission(const std::vector<int>& comission) {
+    return testedComissions.count(computeKey(comission));
   }
 };
 
@@ -59,8 +87,8 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   return score * 50.0f;
 }
 
-std::vector<TeacherRank>
-scoreTeachers(const std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input) {
+std::vector<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
+
   std::vector<TeacherRank> result;
 
   for (int i = 0; i < input.N(); i++) {
@@ -77,8 +105,22 @@ scoreTeachers(const std::vector<int>& comission, std::vector<int>& dFullfilment,
 
     score += heuristic(input, comission, i);
 
-    result.push_back({i, score, d});
+    //Checks if we have already tested the comission
+    {
+      comission.push_back(i);
+      if (tabu.hasComission(comission)) {
+        comission.pop_back();
+        continue;
+      }
+
+      tabu.addComission(comission);
+      comission.pop_back();
+    }
+
+    result.push_back({i, score});
   }
+
+  std::sort(result.begin(), result.end());
 
   return result;
 }
@@ -117,10 +159,12 @@ int popTeacher(float alpha, std::set<TeacherRank>& ranking) {
   return teacher;
 }
 
-int bestRequired;
-int iterations;
+auto randEngine = std::default_random_engine(time(0));
+int  bestRequired;
+int  iterations;
+int  backtracks;
 
-bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input) {
+bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comission, std::vector<int>& dFull, Input& input, Tabu& tabu) {
   //INV: requiredTeachers = sum(input.n) - comission.size()
   //INV: bestRequired = minimal value found so far in the algorithm
   //INV: iterations = number of calls to solveRecursive
@@ -136,21 +180,36 @@ bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comissi
     return true;
   }
 
-  std::vector<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input);
+  std::vector<TeacherRank> scoredTeachers = scoreTeachers(comission, dFull, input, tabu);
 
-  //ordered set of teachers sorted by score (higher score first)
-  set<TeacherRank> rankedTeachers(scoredTeachers.begin(), scoredTeachers.end());
-  while (!rankedTeachers.empty()) {
-    int teacher = popTeacher(alpha, rankedTeachers);
+  if (alpha != 0.0f && scoredTeachers.size() != 0) {
+    float max_score = scoredTeachers[0].score;
+    float min_score = scoredTeachers[scoredTeachers.size() - 1].score;
+    float threshold = max_score - alpha * (max_score - min_score);
+
+    //Filter all teachers with bigger than threshold
+    std::vector<TeacherRank> rcl;
+    for (int i = 0; i < scoredTeachers.size(); i++) {
+      if (scoredTeachers[i].score >= threshold) rcl.push_back(scoredTeachers[i]);
+    }
+
+    //Randomize final candidates (we have to pick them randomly from the rcl)
+    std::shuffle(rcl.begin(), rcl.end(), randEngine);
+    std::swap(rcl, scoredTeachers);
+  }
+
+  for (int i = 0; i < scoredTeachers.size(); i++) {
+    int teacher = scoredTeachers[i].teacher;
 
     //Comission add
     comission.push_back(teacher);
     dFull[input.d[teacher]]++;
 
     if (input.validMediation(comission)) {
-      bool solved = solveRecursive(alpha, requiredTeachers - 1, comission, dFull, input);
+      bool solved = solveRecursive(alpha, requiredTeachers - 1, comission, dFull, input, tabu);
       if (solved) return solved;
     }
+    backtracks++;
 
     //Comission remove
     comission.pop_back();
@@ -187,8 +246,9 @@ SolverSolution solveGreedy(float alpha, Input& input) {
 
   iterations   = 0;
   bestRequired = requiredTeachers;
+  Tabu tabu;
 
-  solveRecursive(alpha, requiredTeachers, comission, currentDepartmentFullfilment, input);
+  solveRecursive(alpha, requiredTeachers, comission, currentDepartmentFullfilment, input, tabu);
 
   if (verbose) {
     printf("Iterations = %d\n", iterations);
