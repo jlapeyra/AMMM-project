@@ -4,6 +4,7 @@
 #include <time.h>
 #include "util.hpp"
 #include <cassert>
+#include "test.hpp"
 
 int generate(int argc, char** argv) {
   Input         input;
@@ -104,6 +105,7 @@ int main(int argc, char** argv) {
     std::cout << "1) Generate a random problem of size <N> <D>\n";
     std::cout << "2) Solve problem <P> using local search\n";
     std::cout << "3) Solve problem <P> using GRASP with <I> iterations and alpha <A>\n";
+    std::cout << "4) Test a set of instances, save tha data to the provided filename <O>\n";
     return 1;
   }
 
@@ -111,4 +113,5 @@ int main(int argc, char** argv) {
   if (option == 1) return generate(argc, argv);
   if (option == 2) return solve(argc, argv);
   if (option == 3) return solveGRASP(argc, argv);
+  if (option == 4) return test(argc, argv);
 }
