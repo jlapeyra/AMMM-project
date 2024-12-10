@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <unordered_set>
 
-bool verbose = false;
+bool verbose = true;
 
 struct TeacherRank {
   int   teacher;
@@ -77,6 +77,7 @@ float memberCompatible(const std::vector<int>& comission, Input& input, int memb
   return compat;
 }
 
+/* Returns the heuristic value of the given candidate partial solution */
 float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   std::vector<int> notInComission = getNotInComission(input, current);
 
@@ -88,6 +89,9 @@ float heuristic(Input& input, const std::vector<int>& current, int newTeacher) {
   return score * 50.0f;
 }
 
+/* Returns the set of candidate teachers to be included in the next candidate solution ordered by score inside a set*/
+/* It is guaranteed that the new formed comission will have distinct members, only compatible members, and no department will be overfilled */
+/* Also it is guaranteed that all new partial comissions from the inclusion of any candidate will be new and not a permutation of any already tested partial comission */
 std::set<TeacherRank> scoreTeachers(std::vector<int>& comission, std::vector<int>& dFullfilment, Input& input, Tabu& tabu) {
 
   std::set<TeacherRank> result;
@@ -314,21 +318,21 @@ SolverSolution solveGRASP(int num_iterations, float alpha, Input& input, ostream
       best_sol     = sol;
     }
     if (csv != nullptr) {
-      auto                           now = std::chrono::high_resolution_clock::now();
-      std::chrono::duration<double>  time = now - start;
-      float                          time_sec = time.count();
-      *csv << input.name << "," << alpha << "," << i+1 << "," << best_fitness << "," << time_sec << "\n";
+      auto                          now      = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> time     = now - start;
+      float                         time_sec = time.count();
+      *csv << input.name << "," << alpha << "," << i + 1 << "," << best_fitness << "," << time_sec << "\n";
     }
     if (!sol.satisfied) {
       return sol;
     }
-    
   }
   return best_sol;
 }
 
 
 SolverSolution solveGRASP(int num_iterations, float alpha, Input& input) {
-  auto do_nothing = [](int, const SolverSolution&) {};
+  auto do_nothing = [](int, const SolverSolution&) {
+  };
   return solveGRASP(num_iterations, alpha, input, nullptr);
 }

@@ -27,7 +27,7 @@ int generate(int argc, char** argv) {
   } while (!input.valid());
   input.save();
 
-  std::cout << "Iterations: " << iterations << "\n";
+  std::cerr << "Iterations: " << iterations << "\n";
 
   return 0;
 }
@@ -89,7 +89,7 @@ int solveGRASP_(int argc, char** argv) {
   if (argc == 5) {
     solution = solveGRASP(num_iterations, alpha, input);
   } else {
-    std::string path = argv[5];
+    std::string   path = argv[5];
     std::ofstream csv(path, std::ios::app);
     solution = solveGRASP(num_iterations, alpha, input, &csv);
   }

@@ -19,7 +19,7 @@ struct Input {
   inline int N() const { return d.size(); }
   inline int D() const { return n.size(); }
 
-  int  generate(GeneratorOpts);
+  void generate(GeneratorOpts);
   void clear();
   int  read(const string& file);
   void save();

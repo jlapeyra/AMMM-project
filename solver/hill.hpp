@@ -16,6 +16,7 @@ OptimizationResult<State> optimize(Input& input, State state, NeighborFunction&&
     std::vector<State> siblings  = neighborFunction(input, state);
     float              bestScore = -1.0f;
     int                bestIndex = -1;
+
     for (int i = 0; i < siblings.size(); i++) {
       float siblingScore = scoreFunction(input, siblings[i]);
       if (siblingScore > bestScore) {

@@ -5,8 +5,6 @@
 #include "parser.hpp"
 #include <iostream>
 #include "util.hpp"
-#include <random>
-#include <set>
 
 // Function to write a std::string to a file
 int writeToFile(const std::string& filePath, const std::string& content) {
@@ -31,14 +29,22 @@ std::string readFromFile(const std::string& filePath) {
   return content;
 }
 
-int Input::generate(GeneratorOpts opts) {
+void Input::generate(GeneratorOpts opts) {
+
+  int   minimumTeacherProportion = 2;
+  float compatibilityOffset      = 0.12f;
+  int   incompatibilityChance    = 6;
+
   clear();
 
   n.resize(opts.D, 0);
   d.resize(opts.N, 0);
 
-  int maxTeachers = opts.N / (opts.D * 3);
+
+  int maxTeachers = opts.N / (opts.D * minimumTeacherProportion);
   int t           = 0;
+
+  //Up to a minimum of maxTeachers
   for (int i = 0; i < n.size(); i++) {
     n[i] = std::max(rand() % maxTeachers, 1);
     for (int j = 0; j < n[i]; j++) {
@@ -46,23 +52,22 @@ int Input::generate(GeneratorOpts opts) {
     }
   }
 
+  //Set the rest to random departments
   for (int i = t; i < opts.N; i++) {
     d[i] = rand() % opts.D;
   }
 
-  //  std::shuffle(d.begin(), d.end(), std::default_random_engine(0));
 
   m.resize(opts.N, std::vector<float>(opts.N));
   for (int i = 0; i < opts.N; i++) {
     for (int j = i + 1; j < opts.N; j++) {
-      float val = std::min(1.0f, (rand() % 100) / float(100) + 0.17f);
-      if ((rand() % 50) < 3)
+      float val = std::min(1.0f, (rand() % 100) / float(100) + compatibilityOffset);
+      if ((rand() % 100) < incompatibilityChance)
         val = 0.0f;
       m[i][j] = m[j][i] = val;
     }
     m[i][i] = 1.0f;
   }
-  return 0;
 }
 
 bool Input::valid() {
@@ -84,7 +89,7 @@ void Input::clear() {
 }
 
 int Input::read(const string& file) {
-  *this = fromString(readFromFile(file));
+  *this      = fromString(readFromFile(file));
   this->name = file;
   return this->errored;
 }
@@ -166,14 +171,12 @@ bool Input::validMediation(const std::vector<int>& comission) const {
 
 float Input::score(const std::vector<int>& comission) const {
   float score = 0.0f;
-  int   count = 0;
   for (int i = 0; i < comission.size(); i++) {
     for (int j = i + 1; j < comission.size(); j++) {
       int u = comission[i];
       int v = comission[j];
 
       score += m[u][v];
-      count++;
     }
   }
 
