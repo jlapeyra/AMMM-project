@@ -5,96 +5,113 @@
 <<< generate
 
 Version identifier: 22.1.1.0 | 2022-11-27 | 9160aff4d
-Tried aggregator 1 time.
-MIQCP Presolve eliminated 4 rows and 1 columns.
-MIQCP Presolve modified 59 coefficients.
-Reduced MIQCP has 65 rows, 97 columns, and 365 nonzeros.
-Reduced MIQCP has 20 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Reduced MIQCP has 7 quadratic constraints.
-Presolve time = 0,00 sec. (0,63 ticks)
-Probing fixed 0 vars, tightened 56 bounds.
-Probing time = 0,00 sec. (0,19 ticks)
-Clique table members: 13.
+Tried aggregator 2 times.
+MIQCP Presolve eliminated 8 rows and 2 columns.
+MIQCP Presolve modified 52 coefficients.
+Aggregator did 2 substitutions.
+Reduced MIQCP has 74 rows, 108 columns, and 378 nonzeros.
+Reduced MIQCP has 17 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Reduced MIQCP has 10 quadratic constraints.
+Presolve time = 0,00 sec. (0,88 ticks)
+Probing fixed 0 vars, tightened 6 bounds.
+Probing time = 0,00 sec. (0,12 ticks)
+Clique table members: 7.
 MIP emphasis: balance optimality and feasibility.
 MIP search method: dynamic search.
 Parallel mode: deterministic, using up to 12 threads.
-Root relaxation solution time = 0,00 sec. (0,11 ticks)
+Root relaxation solution time = 0,00 sec. (0,12 ticks)
 
         Nodes                                         Cuts/
    Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
 
-      0     0       29,8862     0                    107,6023        0         
-      0     0       29,4676     0                     Cone: 1        1         
-      0     0       29,4360     2                     Cone: 3        3         
-      0     0       29,3318     4                     Cone: 4        7         
-      0     0       29,2686     8                     Cone: 6       12         
-      0     0       29,0155     7                     Cone: 7       16         
-      0     0       28,9941     7                     Cone: 8       18         
-      0     0       26,8931     9                    Cone: 40      103         
-      0     0       26,8931    16                    Cone: 60      118         
-      0     0       26,8931    20                    Cone: 80      134         
-      0     0       26,8931    20                   Cone: 100      149         
-      0     0       26,8931    20                   Cone: 118      162         
-      0     0       26,8931    20                   Cone: 134      175         
-      0     0       26,8931    20                   Cone: 145      184         
-      0     0       26,8931    20                   Cone: 153      194         
-      0     0       26,8931    20                   Cone: 158      201         
-      0     0       26,8931    20                   Cone: 160      203         
-      0     0       26,8931    20                   Cone: 162      205         
-      0     0       26,8931    20                     26,8931      205         
-*     0+    0                            6,9100       26,8931           289,19%
-      0     0       24,9561    19        6,9100      Cuts: 41      277  261,16%
-*     0+    0                            7,1100       24,9561           251,00%
-      0     0       23,9539    19        7,1100      Cuts: 23      297  236,90%
-      0     0       23,8665    20        7,1100      Cuts: 24      306  235,68%
-      0     0       23,2584    18        7,1100      Cuts: 19      318  227,12%
-      0     0       22,5420    18        7,1100      Cuts: 18      339  217,05%
-      0     0       22,3986    20        7,1100      Cuts: 13      347  215,03%
-      0     0       22,0631    18        7,1100      Cuts: 16      357  210,31%
-      0     0       21,9952    20        7,1100      Cuts: 12      362  209,36%
-      0     0       21,1680    20        7,1100  LiftProj: 20      379  197,72%
-      0     0       20,9750    20        7,1100      Cuts: 26      388  195,01%
-      0     0       20,7925    20        7,1100      Cuts: 13      398  192,44%
-      0     0       20,7131    19        7,1100      Cuts: 21      406  191,32%
-      0     0       20,6743    19        7,1100       Cuts: 8      411  190,78%
-*     0+    0                            7,1600       20,6743           188,75%
-      0     0       19,3236    19        7,1600  LiftProj: 20      435  169,88%
-      0     0       18,9154    19        7,1600      Cuts: 28      447  164,18%
-      0     0       18,7956    20        7,1600      Cuts: 15      456  162,51%
-      0     0       18,7819    20        7,1600  LiftProj: 15      464  162,32%
-      0     0       18,7810    20        7,1600       Cuts: 4      466  162,30%
-      0     0       18,1223    20        7,1600  LiftProj: 19      489  153,10%
-*     0+    0                            7,3500       18,1223           146,56%
-      0     0       17,9134    20        7,3500  LiftProj: 16      501  143,72%
-      0     0       17,6305    20        7,3500  LiftProj: 19      517  139,87%
-      0     0       17,5969    19        7,3500      Cuts: 27      523  139,41%
-      0     0       17,5448    20        7,3500      Cuts: 23      531  138,70%
-      0     0       17,5448    20        7,3500   LiftProj: 1      532  138,70%
-      0     2       17,5448    20        7,3500       17,5448      532  138,70%
-Elapsed time = 0,84 sec. (556,78 ticks, tree = 0,02 MB, solutions = 4)
-*     5+    2                            8,1600       16,4011           100,99%
-*   159    19      integral     0        8,2500       15,1186     1875   83,26%
-*   255    16      integral     0        8,6600       15,1186     2331   74,58%
+      0     0       29,5889     0                     95,6346        0         
+      0     0       29,5661     0                     Cone: 2        1         
+      0     0       29,5037     1                     Cone: 4        3         
+      0     0       29,5030     4                     Cone: 6        5         
+      0     0       29,5022     7                     Cone: 8        6         
+      0     0       29,3550     7                     Cone: 9       10         
+      0     0       29,3317     3                    Cone: 10       14         
+      0     0       25,4557     5                    Cone: 43      102         
+      0     0       25,4553    10                    Cone: 65      119         
+      0     0       25,4551    17                    Cone: 85      144         
+      0     0       25,4550    17                   Cone: 105      161         
+      0     0       25,4550    17                   Cone: 123      176         
+      0     0       25,4549    17                   Cone: 138      188         
+      0     0       25,4549    17                   Cone: 149      198         
+      0     0       25,4549    17                   Cone: 161      207         
+      0     0       25,4549    17                   Cone: 167      212         
+      0     0       25,4549    17                   Cone: 168      213         
+      0     0       25,4549    17                   Cone: 170      216         
+      0     0       25,4549    17                   Cone: 172      217         
+      0     0       25,4549    17                   Cone: 173      218         
+      0     0       25,4549    17                     25,4549      218         
+*     0+    0                            8,0900       25,4549           214,65%
+      0     0       21,3044    14        8,0900      Cuts: 42      302  163,34%
+      0     0       19,1356    16        8,0900      Cuts: 17      313  136,53%
+      0     0       18,3235    15        8,0900      Cuts: 24      338  126,50%
+      0     0       18,1116    17        8,0900      Cuts: 19      346  123,88%
+      0     0       17,5937    16        8,0900      Cuts: 21      370  117,47%
+      0     0       17,2225    17        8,0900      Cuts: 14      383  112,89%
+      0     0       16,4593    15        8,0900      Cuts: 17      405  103,45%
+      0     0       16,1473    14        8,0900      Cuts: 19      414   99,60%
+      0     0       15,8771    15        8,0900      Cuts: 18      422   96,26%
+      0     0       15,6060    12        8,0900      Cuts: 13      434   92,90%
+      0     0       15,4389    16        8,0900      Cuts: 15      443   90,84%
+      0     0       15,3323    15        8,0900       Cuts: 8      448   89,52%
+      0     0       15,0049    15        8,0900      Cuts: 20      463   85,47%
+      0     0       14,9036    16        8,0900      Cuts: 21      470   84,22%
+      0     0       14,1302    13        8,0900      Cuts: 18      486   74,66%
+      0     0       13,7638    12        8,0900  LiftProj: 13      500   70,13%
+      0     0       13,6115    14        8,0900      Cuts: 22      515   68,25%
+*     0+    0                            9,1200       13,6115            49,25%
+      0     0       13,3414    15        9,1200      Cuts: 18      533   46,29%
+      0     0       13,1853    16        9,1200      Cuts: 15      543   44,58%
+      0     0       13,0666    14        9,1200      Cuts: 19      552   43,27%
+      0     0       12,9293    15        9,1200      Cuts: 14      562   41,77%
+      0     0       12,8437    15        9,1200      Cuts: 21      575   40,83%
+      0     0       12,7066    16        9,1200      Cuts: 13      590   39,33%
+      0     0       12,6390    15        9,1200      Cuts: 30      598   38,59%
+      0     0       12,6186    16        9,1200      Cuts: 10      603   38,36%
+      0     0       12,5443    16        9,1200      Cuts: 19      613   37,55%
+      0     0       12,2928    16        9,1200      Cuts: 24      626   34,79%
+      0     0       12,2378    16        9,1200      Cuts: 16      630   34,19%
+      0     0       11,9786    16        9,1200  LiftProj: 17      647   31,34%
+      0     0       11,9073    15        9,1200  LiftProj: 14      658   30,56%
+      0     0       11,8788    16        9,1200      Cuts: 11      663   30,25%
+      0     0       11,7790    15        9,1200  LiftProj: 14      674   29,16%
+      0     0       11,7367    16        9,1200       Cuts: 4      681   28,69%
+      0     0       11,7165    15        9,1200      Cuts: 15      687   28,47%
+      0     0       11,7059    16        9,1200      Cuts: 15      690   28,35%
+      0     0       11,7009    17        9,1200   LiftProj: 5      692   28,30%
+      0     0       11,6953    17        9,1200   LiftProj: 5      697   28,24%
+      0     0       11,6719    17        9,1200      Cuts: 13      704   27,98%
+      0     0       11,6165    17        9,1200   LiftProj: 8      712   27,37%
+      0     0       11,5981    17        9,1200  LiftProj: 21      723   27,17%
+      0     0       11,5940    17        9,1200   LiftProj: 7      727   27,13%
+      0     0       11,5939    17        9,1200  LiftProj: 11      728   27,13%
+*     0+    0                            9,1200       11,5939            27,13%
+      0     2       11,5939    17        9,1200       11,5939      728   27,13%
+Elapsed time = 1,28 sec. (723,19 ticks, tree = 0,02 MB, solutions = 2)
 
-Flow cuts applied:  1
-Mixed integer rounding cuts applied:  4
-Lift and project cuts applied:  39
+Flow cuts applied:  2
+Mixed integer rounding cuts applied:  1
+Lift and project cuts applied:  53
 Gomory fractional cuts applied:  1
-Cone linearizations applied:  259
+Cone linearizations applied:  64
 
 Root node processing (before b&c):
-  Real time             =    0,69 sec. (556,61 ticks)
+  Real time             =    1,27 sec. (723,06 ticks)
 Parallel b&c, 12 threads:
-  Real time             =    0,56 sec. (19,63 ticks)
-  Sync time (average)   =    0,38 sec.
+  Real time             =    0,14 sec. (5,76 ticks)
+  Sync time (average)   =    0,11 sec.
   Wait time (average)   =    0,00 sec.
                           ------------
-Total (root+branch&cut) =    1,25 sec. (576,23 ticks)
+Total (root+branch&cut) =    1,41 sec. (728,82 ticks)
 
 <<< solve
 
 
-OBJECTIVE: 8.66
+OBJECTIVE: 9.12
 
 <<< post process
 

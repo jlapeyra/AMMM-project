@@ -7,7 +7,7 @@ TIMEOUT=60
 echo "instance,score,time" > $CSV
 
 # Outer loop: iterate over instances
-for path_instance in custom_dat/increasing_size/*.dat; do
+for path_instance in custom_dat/increasing_size_2/*.dat; do
     sleep 1
 
     out="sol-opl/$(basename $path_instance)".sol
