@@ -1,5 +1,6 @@
 #include "test.hpp"
 #include "solver.hpp"
+#include "timeout.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -8,31 +9,8 @@
 #include <chrono>
 #include <vector>
 
-std::vector<Progress> timeoutSolveGRASP(int timeout_seconds, int num_iterations, float alpha, Input& input) {
-  std::vector<Progress> history; // History vector to store intermediate results
-
-  // Packaged task for the computation
-  std::packaged_task<void()> task([&]() {
-    //solveGRASP(num_iterations, alpha, input, history);
-  });
-  std::future<void>          future = task.get_future();
-  std::thread                task_thread(std::move(task));
-
-  if (future.wait_for(std::chrono::seconds(timeout_seconds)) == std::future_status::ready) {
-    // Completed within timeout
-    task_thread.join(); // Clean up thread
-  } else {
-    // Timed out
-    task_thread.detach(); // Detach thread to let it finish in the background
-    std::cerr << "Solver timed out. Returning partially updated history.\n";
-  }
-
-  return history; // Return the current state of history
-}
-
-
 const int NUM_ITERATIONS = 10;
-const int TIMEOUT        = 120;
+const int TIMEOUT        = 60;
 
 int test(int argc, char** argv) {
 
@@ -49,19 +27,10 @@ int test(int argc, char** argv) {
     Input       input;
     input.read(path_instance);
     for (float alpha = 0; alpha <= 1; alpha += 0.2) {
-      int                   num_iterations    = alpha == 0 ? 1 : NUM_ITERATIONS;
-      std::vector<Progress> iteration_results = timeoutSolveGRASP(TIMEOUT, num_iterations, alpha, input);
-      for (int it = 1; it <= num_iterations; it++) {
-        os << path_instance << "," << alpha << "," << it << ",";
-        //std::cout  << "\n\n\nInstance: " << path_instance << "\nAlpha = " << alpha << "\nIteration:" << it << "\n";
-        int idx = it - 1;
-        if (idx < iteration_results.size()) {
-          Progress result = iteration_results[idx];
-          os << result.best_fitness << "," << result.time_seconds << "\n";
-        } else {
-          os << "NA,TO\n";
-        }
-      }
+      std::cout  << "\n\n\nInstance: " << path_instance << "\nAlpha = " << alpha << "\n";
+      int num_iterations = alpha == 0 ? 1 : NUM_ITERATIONS;
+      setTimeout(TIMEOUT);
+      solveGRASP(num_iterations, alpha, input, &os);
       os.flush();
     }
   }

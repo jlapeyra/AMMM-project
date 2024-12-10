@@ -1,4 +1,5 @@
 #include <vector>
+#include "timeout.hpp"
 
 template <typename State>
 struct OptimizationResult {
@@ -12,6 +13,9 @@ OptimizationResult<State> optimize(Input& input, State state, NeighborFunction&&
   int   iterations   = 0;
 
   while (1) {
+    if (timeout())
+      break;
+
     iterations++;
     std::vector<State> siblings  = neighborFunction(input, state);
     float              bestScore = -1.0f;

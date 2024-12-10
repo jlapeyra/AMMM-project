@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NUM_ITERATIONS=10  # Define the number of iterations
-CSV="custom_dat.csv"   # Example CSV file
+CSV="increasing.csv"   # Example CSV file
 TIMEOUT=60
 
 ./compile.sh
@@ -9,7 +9,7 @@ TIMEOUT=60
 echo "instance,alpha,num_iterations,score,time" > $CSV
 
 # Outer loop: iterate over instances
-for path_instance in custom_dat/*; do
+for path_instance in custom_dat/increasing_size/*.dat; do
   # Inner loop: iterate over alpha values from 0 to 1 in increments of 0.2
   for alpha in $(seq 0 0.2 1); do
     sleep 1

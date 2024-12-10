@@ -166,6 +166,8 @@ bool solveRecursive(float alpha, int requiredTeachers, std::vector<int>& comissi
   //INV: bestRequired = minimal value found so far in the algorithm
   //INV: iterations = number of calls to solveRecursive
 
+  if (timeout()) return false;
+
   if (requiredTeachers < bestRequired) {
     printf("\tFound comission with %d teachers missing.\n", requiredTeachers);
   }
@@ -323,7 +325,7 @@ SolverSolution solveGRASP(int num_iterations, float alpha, Input& input, ostream
       float                         time_sec = time.count();
       *csv << input.name << "," << alpha << "," << i + 1 << "," << best_fitness << "," << time_sec << "\n";
     }
-    if (!sol.satisfied) {
+    if (!sol.satisfied || timeout()) {
       return sol;
     }
   }
