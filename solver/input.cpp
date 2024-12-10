@@ -31,7 +31,7 @@ std::string readFromFile(const std::string& filePath) {
 
 void Input::generate(GeneratorOpts opts) {
 
-  int   minimumTeacherProportion = 2;
+  int   minimumTeacherProportion = 3;
   float compatibilityOffset      = 0.12f;
   int   incompatibilityChance    = 6;
 
