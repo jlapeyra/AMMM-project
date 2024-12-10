@@ -7,6 +7,7 @@
 \usepackage{algorithm}
 \usepackage{float}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \title{%
   Algorithmic Methods for Mathematical Models\\
   \large COURSE PROJECT }
@@ -19,8 +20,44 @@
 \maketitle
 
 \section{Formulation}
-// Talk about problem formulation
 
+\subsection*{Inputs}
+\begin{itemize}
+    \item Matrix \( m \in \mathbb{R}^{N \times N} \), where \( m[i][j] = m[j][i] \) and \( m[i][i] = 1 \), representing the compatibility of member \( i \) and \( j \).
+    \item Vector \( d \in \mathbb{Z}^N \), where \( d[i] \) indicates the department of member \( i \).
+    \item Vector \( n \in \mathbb{Z}^D \), where \( n[i] \) indicates the exact number of members from department \( i \) required in the commission.
+    \item Scalar \( N \), the number of members.
+    \item Scalar \( D \), the number of departments.
+\end{itemize}
+
+\subsection*{Assumptions}
+\begin{itemize}
+    \item \( N = \text{size}(m[0]) \)
+    \item \( D = \text{size}(n) \)
+    \item \( d[i] \in \{1,2,\dots, D\} \, \forall i \)
+    \item \( \sum_{i=1}^{D} n[i] \leq N \)
+    \item \( m[i][j] \in [0, 1], \, \forall i, j \)
+\end{itemize}
+
+\subsection*{Variables}
+\begin{itemize}
+    \item Vector \( x \in \{0, 1\}^N \), where \( x[i] = 1 \) if member \( i \) belongs to the commission, and \( x[i] = 0 \) otherwise.
+\end{itemize}
+
+\subsection*{Constraints}
+\begin{align}
+    & x[i] \land x[j] \implies m[i][j] \neq 0, \quad \forall i, j \label{eq:compatibility} \\
+    & x[i] \land x[j] \land m[i][j] < 0.15 \implies x[u] \land m[u][i] > 0.85 \land m[u][j] > 0.85, \quad \forall i, j, u \label{eq:strong_compatibility} \\
+    & n[i] = \sum_{j=1}^{N} x[j] \land d[j] = i, \quad \forall i \label{eq:department_count}
+\end{align}
+
+\subsection*{Objective Function}
+Maximize:
+\begin{equation}
+    \sum_{i=1}^{N} \sum_{j=i+1}^{N} x[i] \cdot x[j] \cdot m[i][j]
+\end{equation}
+
+\newpage
 \section{Integer Linear Programming Model}
 
 \newpage
@@ -182,6 +219,7 @@ As it is now, we only perform 2 swaps. The rational behind this is that a single
 \section{Results comparison}
 
 \section{Implementation}
-// Talk about the environment (C++ ... )
-
+We have implmented all the code for the Local search procedure and instance generator in C++. Many changes have been made from the formulation of the theoretical algorithm to the implementation to improve the performance of the algorithm, but since they are more micro optimization details that do not cause the algorithm to deviate from its formulation and behaviour they have been omitted for calrity purposes.
+All the implemented code can be seen in the repository provided with instructions to be compiled and executed.
+The LPO code can also be found in the repo.
 \end{document}
