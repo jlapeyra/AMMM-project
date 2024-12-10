@@ -4,8 +4,9 @@
 \usepackage{caption}
 \usepackage{booktabs}
 \usepackage{algpseudocode}
+\usepackage{algorithm}
 \usepackage{float}
-
+\usepackage{amsmath}
 \title{%
   Algorithmic Methods for Mathematical Models\\
   \large COURSE PROJECT }
@@ -23,10 +24,11 @@ Some text
 \section{Integer Linear Programming Model}
 \section{Constructive Greedy}
 
-For the Constructive Greedy we have opt for a recursive solution, at every recursive step we try to increase our current comission by one member. If we failed in the construction of the comission (our choices let to an unsolvable step) we backtrack until we are again with a partial solution.
+For the Constructive Greedy we have opted for a recursive solution, at every recursive step we try to increase our current comission by one member. If we failed in the construction of the comission (our choices let to an unsolvable step) we backtrack until we are again with a partial solution.
 
 We will explain the main algorithm and any subsequent auxiliar function that we are using.
 
+\begin{algorithm}
 \begin{algorithmic}[H]
 \Function{solve}{commission, input, blacklist} \textbf{: Set}
     \If{\Call{comissionIsReady}{input, commission}}
@@ -42,16 +44,18 @@ We will explain the main algorithm and any subsequent auxiliar function that we 
     \State \Return $\emptyset$
 \EndFunction
 \end{algorithmic}
+\end{algorithm}
 
 \begin{itemize}
   \item Our function receives as input the current partial solution, comission, the input of the problem (With all the input variables) and a blacklist set.
   \item First we test if our partial solution is indeed a complete solution, if it is return as the result of the algorithm.
-  \item We define a candidate as the current partial comission increased by one member who was not in the comission, this new partial comission is guaranteed to be respect all problem restrictions.
+  \item We define a candidate as the current partial comission increased by one member who was not in the comission, this new partial comission is guaranteed to respect all problem restrictions.
   \item We compute every candidate from our current comission and store them all sorted in our candidateSet. Next we will try each candidate in order, calling recursively the routine solve to advance our comission construction.
   \item Once we exit the function solve, by induction, we either have found a complete comission in which case we return the solution, or proved that no valid complete comission can be found using this candidate, in which case we continue to the next candidate.
   \item Once we have tested every candidate we have proved that this partial comission cannot yield any complete comission, then we return empty set.
 \end{itemize}
 
+\begin{algorithm}
 \begin{algorithmic}[H]
 \Function{getAllCandidates}{input, commission, blacklist} \textbf{: Set}
     \State candidateSet $\gets \emptyset$
@@ -67,28 +71,102 @@ We will explain the main algorithm and any subsequent auxiliar function that we 
     \State \Return candidateSet
 \EndFunction
 \end{algorithmic}
+\end{algorithm}
 
 To get all candidates 
 
+\begin{algorithm}
 \begin{algorithmic}[H]
 \Function{validCandidate}{commission} \textbf{: Boolean}
-    \State \Return \Call{allMembersCompatible}{commission} \textbf{and} \Call{allDepartmentsNotOverflown} 
+    \State \Return \Call{allMembersCompatible}{commission} \textbf{and} \Call{allDepartmentsNotOverflowed}{}
 \EndFunction
 \end{algorithmic}
+\end{algorithm}
 
-\begin{algorithmic}[H]
-\Function{candidateComputeScore}{commission} \textbf{: Float}
-    \State finalScore $\gets$ \Call{finalScoreFormula}{commission}
-    \State heuristic $\gets$ \Call{heuristicFormula}{commission}
-    \State \Return finalScore $+$ heuristic
-\EndFunction
-\end{algorithmic}
+\subsection{Heuristic function}
+This function gives the score of a candidate partial comission, it takes as input the original partial comission, comission, and the new member, u.
+The variable m is the input compatibility matrix, a, b and c are tuned coefficients.
 
-\begin{algorithmic}[H]
-\State \Call{solve}{[], input, []}
-\end{algorithmic}
+\[
+H = a \cdot H_s + b \cdot H_c + c \cdot H_m
+\]
+
+\[
+H_s = \sum_{x \in \text{C}} m[u][x]
+\]
+
+\[
+H_c = \left| \{ x \mid x \notin \text{commission} \, \text{and} \, m[x][u] > 0.15 \} \right|
+\]
+
+\[
+H_m = \left| \{ x \mid x \notin \text{commission} \, \text{and} \, m[x][u] \neq 0.15 \} \right|
+\]
+
+The rationale of the heuristic function and why it was chose is to minimize the number of invalid candidates in the next iteration so we can find a feasible solution at least during the greedy construction. Also taking into account the score of the comission prefering candidates that increase the score when feasibility is not compromised:
+
+\begin{itemize}
+  \item We want to prioritize candidates that minimize the number of incompatibilities they generate from the inclusion of the new member. Thus we take into account variable $H_m$
+  \item We also want to take into account the number of mediators that are needed, it might be diffifult to find an appropiate mediator, we should prefere candidates comission that do not have many requirements. We take them into account in variable $H_c$
+  \item Finally in case of draw or close draw we should prioritize candidates that have the potential of giving higher scores.
+\end{itemize}
+
+The coefficients a b and c can be fined tune to find an optimal configuratoin of the heuristic.
 
 \section{Local search}
+
+For local search algorithm we have implemented a basic Hill Climbing algorithm: 
+
+\begin{algorithm}
+\begin{algorithmic}[H]
+\Function{optimize}{commission, input} \textbf{: Commission}
+    \While{\textbf{true}}
+        \State neighbors $\gets$ \Call{findNeighbors}{input, commission}
+        \If{neighbors is $\emptyset$}
+          \State \Return comission
+        \EndIf
+        \State bestNeighbor $\gets$ neighbors[\Call{bestNeighbor}{neighbors}]
+        \If{bestNeighbor $=$ commission}
+            \State \Return commission
+        \EndIf
+        \State commission $\gets$ bestNeighbor
+    \EndWhile
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Where $findNeighbors$ finds all the neighbors of the current comission and bestNeighbor returns the neighbor index with highest score. In case the best neighbor is already the current one, or there were no neighbors just return the current solution found until now.
+
+As for scoring a final comission we use the following formula, which computes the summation of compatibility of all unique pairs in the comission, C:
+
+\[
+\text{score} = \sum_{i=1}^{n} \sum_{j=i+1}^{n} m[\text{C}[i]][\text{C}[j]]
+\]
+
+For obtaining the neighbors we use an n-swap strategy. We perform all possible n interchanges between the comission and all members who are not in the comission that gives a valid comission (all restrictions satisfied).
+
+\begin{algorithm}
+\begin{algorithmic}[H]
+\Function{getNeighbors}{$n$, input, commission} \textbf{: List}
+    \State neighbors $\gets$ \textbf{[]}
+    \For{$c \in \text{commission}$}
+        \For{$x \notin \text{commission}$}
+            \State candidate $\gets$ \Call{swap}{commission, $c$, $x$}
+            \If{$n = 1$ \textbf{and} \Call{input.valid}{candidate}}
+                \State \Call{neighbors.add}{candidate}
+            \ElsIf{$n > 1$}
+                \State partial $\gets$ \Call{getNeighbors}{n - 1, input, comission}
+                \State \Call{neighbors.extend}{partial}
+            \EndIf
+        \EndFor
+    \EndFor
+    \State \Return neighbors
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+As it is now, we only perform 2 swaps. The rational behind this is that a single swap might give a invalid state due to not fullfilling the restriction on mediator members, which an even number of swaps can correct. Trying higher number of swaps does not improve results much and makes the algorithm very slow to complete due to the increase in neighbors.
+
 \section{GRASP}
 \section{Results comparison}
 \end{document}

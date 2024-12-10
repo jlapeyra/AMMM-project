@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.12.4)  10 DEC 2024 14:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.12.4)  10 DEC 2024 14:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**report.tex
-(./report.tex
+**correct.tex
+(./correct.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/share/texmf-dist/tex/latex/base/article.cls
@@ -129,20 +129,13 @@ Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
 \ALG@tmplength=\skip52
 )
 Document Style - pseudocode environments for use with the `algorithmicx' style
-) (/usr/share/texmf-dist/tex/latex/algorithms/algorithm.sty
-Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
-nment
-
-(/usr/share/texmf-dist/tex/latex/float/float.sty
+) (/usr/share/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count278
 \float@exts=\toks19
 \float@box=\box51
 \@float@everytoks=\toks20
 \@floatcapt=\box52
-)
-\@float@every@algorithm=\toks21
-\c@algorithm=\count279
 )
 (/usr/share/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2023/05/13 v2.17o AMS math features
@@ -154,7 +147,7 @@ Package: amstext 2021/08/26 v2.01 AMS text
 
 (/usr/share/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks22
+\@emptytoks=\toks21
 \ex@=\dimen172
 ))
 (/usr/share/texmf-dist/tex/latex/amsmath/amsbsy.sty
@@ -164,14 +157,14 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 (/usr/share/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count280
+\inf@bad=\count279
 LaTeX Info: Redefining \frac on input line 234.
-\uproot@=\count281
-\leftroot@=\count282
+\uproot@=\count280
+\leftroot@=\count281
 LaTeX Info: Redefining \overline on input line 399.
 LaTeX Info: Redefining \colon on input line 410.
-\classnum@=\count283
-\DOTSCASE@=\count284
+\classnum@=\count282
+\DOTSCASE@=\count283
 LaTeX Info: Redefining \ldots on input line 496.
 LaTeX Info: Redefining \dots on input line 499.
 LaTeX Info: Redefining \cdots on input line 620.
@@ -184,68 +177,69 @@ LaTeX Info: Redefining \Bigg on input line 725.
 \big@size=\dimen174
 LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
-\macc@depth=\count285
+\macc@depth=\count284
 LaTeX Info: Redefining \bmod on input line 905.
 LaTeX Info: Redefining \pmod on input line 910.
 LaTeX Info: Redefining \smash on input line 940.
 LaTeX Info: Redefining \relbar on input line 970.
 LaTeX Info: Redefining \Relbar on input line 971.
-\c@MaxMatrixCols=\count286
+\c@MaxMatrixCols=\count285
 \dotsspace@=\muskip16
-\c@parentequation=\count287
-\dspbrk@lvl=\count288
-\tag@help=\toks23
-\row@=\count289
-\column@=\count290
-\maxfields@=\count291
-\andhelp@=\toks24
+\c@parentequation=\count286
+\dspbrk@lvl=\count287
+\tag@help=\toks22
+\row@=\count288
+\column@=\count289
+\maxfields@=\count290
+\andhelp@=\toks23
 \eqnshift@=\dimen175
 \alignsep@=\dimen176
 \tagshift@=\dimen177
 \tagwidth@=\dimen178
 \totwidth@=\dimen179
 \lineht@=\dimen180
-\@envbody=\toks25
+\@envbody=\toks24
 \multlinegap=\skip54
 \multlinetaggap=\skip55
-\mathdisplay@stack=\toks26
+\mathdisplay@stack=\toks25
 LaTeX Info: Redefining \[ on input line 2953.
 LaTeX Info: Redefining \] on input line 2954.
 )
 (/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count292
+\l__color_backend_stack_int=\count291
 \l__pdf_internal_box=\box55
-) (./report.aux)
-\openout1 = `report.aux'.
+)
+No file correct.aux.
+\openout1 = `correct.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 17.
-LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
 (/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count293
+\scratchcounter=\count292
 \scratchdimen=\dimen181
 \scratchbox=\box56
-\nofMPsegments=\count294
-\nofMParguments=\count295
-\everyMPshowfont=\toks27
-\MPscratchCnt=\count296
+\nofMPsegments=\count293
+\nofMParguments=\count294
+\everyMPshowfont=\toks26
+\MPscratchCnt=\count295
 \MPscratchDim=\dimen182
-\MPnumerator=\count297
-\makeMPintoPDFobject=\count298
-\everyMPtoPDFconversion=\toks28
+\MPnumerator=\count296
+\makeMPintoPDFobject=\count297
+\everyMPtoPDFconversion=\toks27
 ) (/usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 
@@ -327,27 +321,27 @@ Package caption Info: End \AtBeginDocument code.
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fonts
 /enc/dvips/cm-super/cm-super-ts1.enc}]
 LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 6
-7.
+3.
 
 (/usr/share/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 67.
- [2] [3] [4] (./report.aux)
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 63.
+ [2] [3] (./correct.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 5211 strings out of 476014
- 86206 string characters out of 5792005
- 1939187 words of memory out of 5000000
- 27272 multiletter control sequences out of 15000+600000
+ 5149 strings out of 476014
+ 85043 string characters out of 5792005
+ 1938187 words of memory out of 5000000
+ 27216 multiletter control sequences out of 15000+600000
  564088 words of font info for 57 fonts, out of 8000000 for 9000
  40 hyphenation exceptions out of 8191
- 61i,10n,69p,387b,413s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 61i,8n,69p,373b,223s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texmf-dist/fonts/type1/publ
@@ -359,10 +353,10 @@ dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type
 ts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 ></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/te
 xmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on report.pdf (4 pages, 160751 bytes).
+Output written on correct.pdf (3 pages, 159667 bytes).
 PDF statistics:
- 83 PDF objects out of 1000 (max. 8388607)
- 50 compressed objects within 1 object stream
+ 80 PDF objects out of 1000 (max. 8388607)
+ 48 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
