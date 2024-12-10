@@ -85,6 +85,7 @@ void Input::clear() {
 
 int Input::read(const string& file) {
   *this = fromString(readFromFile(file));
+  this->name = file;
   return this->errored;
 }
 

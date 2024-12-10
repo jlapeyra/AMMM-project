@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <unordered_set>
 
-bool verbose = true;
+bool verbose = false;
 
 struct TeacherRank {
   int   teacher;
@@ -279,7 +279,7 @@ SolverSolution solve(float alpha, Input& input) {
   printf("Construction phase:\n");
   sol = solveGreedy(alpha, input);
   printf("Local Search:\n");
-  if (sol.comission.size()) {
+  if (sol.satisfied) {
     if (verbose)
       printf("\tExecuting hill climbing:\n");
 
@@ -299,28 +299,36 @@ SolverSolution solve(float alpha, Input& input) {
 /* GRASP solver */
 // PRE: num_iterations >= 1
 // PRE: 0 <= alpha <= 1
-SolverSolution solveGRASP(int num_iterations, float alpha, Input& input, std::vector<Progress>& history) {
+SolverSolution solveGRASP(int num_iterations, float alpha, Input& input, ostream* csv) {
   SolverSolution best_sol;
   float          best_fitness = -1.0;
-  history                     = std::vector<Progress>(0);
-  auto start                  = std::chrono::high_resolution_clock::now();
+  auto           start        = std::chrono::high_resolution_clock::now();
+  if (alpha == 0) {
+    num_iterations = 1;
+  }
 
   for (int i = 0; i < num_iterations; i++) {
     SolverSolution sol = solve(alpha, input);
-    if (sol.fitness > best_fitness) {
+    if (sol.satisfied && sol.fitness > best_fitness) {
       best_fitness = sol.fitness;
       best_sol     = sol;
     }
-    auto                          end      = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time     = end - start;
-    float                         time_sec = time.count();
-    history.push_back({time_sec, best_fitness});
+    if (csv != nullptr) {
+      auto                           now = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double>  time = now - start;
+      float                          time_sec = time.count();
+      *csv << input.name << "," << alpha << "," << i+1 << "," << best_fitness << "," << time_sec << "\n";
+    }
+    if (!sol.satisfied) {
+      return sol;
+    }
+    
   }
   return best_sol;
 }
 
 
 SolverSolution solveGRASP(int num_iterations, float alpha, Input& input) {
-  std::vector<Progress> history(0);
-  return solveGRASP(num_iterations, alpha, input, history);
+  auto do_nothing = [](int, const SolverSolution&) {};
+  return solveGRASP(num_iterations, alpha, input, nullptr);
 }

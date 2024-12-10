@@ -22,5 +22,5 @@ struct SolverSolution {
 std::vector<State> getNeighbors(Input& input, State& current);
 SolverSolution     solveGreedy(float alpha, Input& input);
 SolverSolution     solve(float alpha, Input& input);
-SolverSolution     solveGRASP(int num_iterations, float alpha, Input& input, std::vector<Progress>& history);
+SolverSolution     solveGRASP(int num_iterations, float alpha, Input& input, ostream* csv);
 SolverSolution     solveGRASP(int num_iterations, float alpha, Input& input);

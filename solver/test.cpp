@@ -13,7 +13,7 @@ std::vector<Progress> timeoutSolveGRASP(int timeout_seconds, int num_iterations,
 
   // Packaged task for the computation
   std::packaged_task<void()> task([&]() {
-    solveGRASP(num_iterations, alpha, input, history);
+    //solveGRASP(num_iterations, alpha, input, history);
   });
   std::future<void>          future = task.get_future();
   std::thread                task_thread(std::move(task));
@@ -53,6 +53,7 @@ int test(int argc, char** argv) {
       std::vector<Progress> iteration_results = timeoutSolveGRASP(TIMEOUT, num_iterations, alpha, input);
       for (int it = 1; it <= num_iterations; it++) {
         os << path_instance << "," << alpha << "," << it << ",";
+        //std::cout  << "\n\n\nInstance: " << path_instance << "\nAlpha = " << alpha << "\nIteration:" << it << "\n";
         int idx = it - 1;
         if (idx < iteration_results.size()) {
           Progress result = iteration_results[idx];

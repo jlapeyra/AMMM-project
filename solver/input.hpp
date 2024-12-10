@@ -13,6 +13,7 @@ struct Input {
   vector<int>           d;
   vector<int>           n;
   bool                  errored;
+  std::string           name;
 
   Input();
   inline int N() const { return d.size(); }

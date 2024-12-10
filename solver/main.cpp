@@ -4,7 +4,9 @@
 #include <time.h>
 #include "util.hpp"
 #include <cassert>
+#include <fstream>
 #include "test.hpp"
+#include <chrono>
 
 int generate(int argc, char** argv) {
   Input         input;
@@ -63,11 +65,11 @@ int solve(int argc, char** argv) {
   return 0;
 }
 
-int solveGRASP(int argc, char** argv) {
+int solveGRASP_(int argc, char** argv) {
   Input input;
 
   if (argc < 5) {
-    std::cout << "Not enough arguments: expected <P> <I> <A>\n";
+    std::cout << "Not enough arguments: expected <P> <I> <A> [<CSV>]\n";
     return 1;
   }
 
@@ -81,9 +83,16 @@ int solveGRASP(int argc, char** argv) {
   assert(0 <= alpha && alpha <= 1);
   assert(num_iterations >= 1);
 
-  input.print();
+  //input.print();
 
-  auto solution = solveGRASP(num_iterations, alpha, input);
+  SolverSolution solution;
+  if (argc == 5) {
+    solution = solveGRASP(num_iterations, alpha, input);
+  } else {
+    std::string path = argv[5];
+    std::ofstream csv(path, std::ios::app);
+    solution = solveGRASP(num_iterations, alpha, input, &csv);
+  }
 
   if (solution.comission.size()) {
     printf("Comission = ");
@@ -104,7 +113,7 @@ int main(int argc, char** argv) {
     std::cout << "You need to provide an operation to execute.\n";
     std::cout << "1) Generate a random problem of size <N> <D>\n";
     std::cout << "2) Solve problem <P> using local search\n";
-    std::cout << "3) Solve problem <P> using GRASP with <I> iterations and alpha <A>\n";
+    std::cout << "3) Solve problem <P> using GRASP with <I> iterations and alpha <A>, dump results at <CSV> if given\n";
     std::cout << "4) Test a set of instances, save tha data to the provided filename <O>\n";
     return 1;
   }
@@ -112,6 +121,6 @@ int main(int argc, char** argv) {
   int option = std::atoi(argv[1]);
   if (option == 1) return generate(argc, argv);
   if (option == 2) return solve(argc, argv);
-  if (option == 3) return solveGRASP(argc, argv);
+  if (option == 3) return solveGRASP_(argc, argv);
   if (option == 4) return test(argc, argv);
 }
